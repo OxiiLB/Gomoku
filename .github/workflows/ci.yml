@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 3
     # container: epitechcontent/epitest-docker:latest
     env:
-      EXECUTABLES: "pbrain-gomoku-ai" # Remplacez par vos fichiers exécutables
+      EXECUTABLES: "pbrain-gomoku-ai"
     steps:
       - name: Checkout GH repository
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
       - name: Check executables
         run: |
           for file in $EXECUTABLES; do
-            if [ ! -x "./build/$file" ]; then
+            if [ ! -x "./$file" ]; then
               echo "File $file does not exist or is not executable"
               exit 1
             fi
