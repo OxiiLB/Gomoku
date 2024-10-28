@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 3
     # container: epitechcontent/epitest-docker:latest
     env:
-      EXECUTABLES: "executable1 executable2" # Remplacez par vos fichiers exécutables
+      EXECUTABLES: "pbrain-gomoku-ai" # Remplacez par vos fichiers exécutables
     steps:
       - name: Checkout GH repository
         uses: actions/checkout@v4
