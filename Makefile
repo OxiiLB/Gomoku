@@ -1,4 +1,4 @@
-j##
+##
 ## EPITECH PROJECT, 2024
 ## makefile
 ## File description:
