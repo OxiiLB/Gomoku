@@ -10,30 +10,9 @@ on:
       - " ga-ignore-"
 
 jobs:
-  auto_format:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    if: github.repository == 'OxiiLB/Gomoku'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-      - name: clang-format
-        run: ./format.sh
-      - name: Check for modified files
-        id: git-check
-        run: echo "modified=$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)" >> $GITHUB_OUTPUT
-      - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        if: steps.git-check.outputs.modified == 'true'
-        with:
-          commit_message: Automated Change
-
   check_linux_program_compilation:
     runs-on: ubuntu-latest
     timeout-minutes: 3
-    needs: auto_format
     # container: epitechcontent/epitest-docker:latest
     steps:
       - name: Checkout GH repository
@@ -55,11 +34,8 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Configure CMake
-        run: cmake -S . -B build
-
       - name: Build project
-        run: cmake --build build -j $(nproc)
+        run: make
 
       - if: ${{ steps.cache-cmake.outputs.cache-hit != 'true' }}
         name: Notify cache miss
@@ -73,7 +49,6 @@ jobs:
               exit 1
             fi
           done
-
 
   # run_tests:
   #   runs-on: ubuntu-latest
