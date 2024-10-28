@@ -1,4 +1,4 @@
-##
+j##
 ## EPITECH PROJECT, 2024
 ## makefile
 ## File description:
@@ -15,7 +15,7 @@ DIR_TESTS	=	$(addprefix tests/, $(TEST))
 OBJ_SRC		=	$(DIR_SRC:.cpp=.o)
 OBJ			=	$(OBJ_SRC)
 
-NAME		=	project
+NAME		=	pbrain-gomoku-ai
 
 CPPFLAGS	=	-I./includes/
 
