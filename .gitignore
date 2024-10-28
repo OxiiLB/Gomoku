@@ -1,32 +1,13 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+# Extention ignored
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
 *.a
-*.lib
+.vscode
+*.txt
 
-# Executables
-*.exe
-*.out
-*.app
+# File ignored
+coding-style*
+vgcore*
+unit-test*
+unit-tests
+project
+a.out
