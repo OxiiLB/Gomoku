@@ -9,7 +9,7 @@ SRC			=	main.cpp
 
 TEST		=	test.cpp
 
-DIR_SRC		=	$(addprefix src/, $(SRC))
+DIR_SRC		=	$(addprefix Src/, $(SRC))
 DIR_TESTS	=	$(addprefix tests/, $(TEST))
 
 OBJ_SRC		=	$(DIR_SRC:.cpp=.o)
@@ -17,7 +17,7 @@ OBJ			=	$(OBJ_SRC)
 
 NAME		=	pbrain-gomoku-ai
 
-CPPFLAGS	=	-I./includes/
+CPPFLAGS	=	-I./Include/
 
 WFLAGS		=	-W -Wall -Wextra -Werror
 
