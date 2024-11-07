@@ -1,8 +1,15 @@
-# Extention ignored
+# Extension ignored
 *.o
 *.a
 .vscode
 *.txt
+*.log
+*.zig
+*.zon
+*.ini
+
+# Directory ignored
+zig
 
 # File ignored
 coding-style*
