@@ -6,16 +6,20 @@
 ##
 
 SRC			=	main.cpp		\
-				command.cpp		\
+
+
+FILE		=	command.cpp		\
 				system.cpp		\
 
 TEST		=	test.cpp
 
 DIR_SRC		=	$(addprefix Src/, $(SRC))
-DIR_TESTS	=	$(addprefix tests/, $(TEST))
+DIR_FILE	=	$(addprefix Src/, $(FILE))
+DIR_TESTS	=	$(addprefix Tests/, $(TEST))
 
 OBJ_SRC		=	$(DIR_SRC:.cpp=.o)
-OBJ			=	$(OBJ_SRC)
+OBJ_FILE	=	$(DIR_FILE:.cpp=.o)
+OBJ			=	$(OBJ_SRC) $(OBJ_FILE)
 
 NAME		=	pbrain-gomoku-ai
 
