@@ -50,6 +50,7 @@ void System::gameLoop()
   initiateStruct(&game);
 
   while (isRunning) {
+
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);

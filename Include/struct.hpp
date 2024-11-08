@@ -12,6 +12,8 @@
 enum class COMMAND_ERROR {
   START,
   BOARD,
+  TURN,
+  BEGIN,
 };
 
 enum class GAME_STATE {
