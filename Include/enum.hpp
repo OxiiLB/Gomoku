@@ -9,6 +9,7 @@
 
 enum class COMMAND_ERROR {
   START,
+  RECTSTART,
   BOARD,
   TURN,
   BEGIN,
