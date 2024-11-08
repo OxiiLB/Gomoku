@@ -17,6 +17,7 @@ class System: virtual public ISystem {
         gomoku_t *getGame() override;
         void initiateStruct(gomoku_t *game) override;
         std::vector<std::string> splitString(const std::string &str) override;
+        void displayGame(gomoku_t *game) override;
 
     protected:
         gomoku_t *game;

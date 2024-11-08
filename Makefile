@@ -35,7 +35,7 @@ LCRITER		= $(shell pkg-config --libs --cflags criterion) --coverage
 $(NAME): $(OBJ)
 	g++ -o $@ $^ $(CPPFLAGS) $(WFLAGS)
 
-debug: $(OBJ_SRC)
+debug: $(OBJ)
 	g++ -o $(NAME) $^ $(CPPFLAGS) $(WFLAGS) -ggdb3
 
 all: $(NAME)
@@ -51,7 +51,7 @@ re: fclean $(NAME)
 
 unit_tests:	fclean
 	mkdir -p unit_tests
-	g++ -o unit_tests/unit_tests $(OBJ) $(DIR_TESTS) $(CPPFLAGS) \
+	g++ -o unit_tests/unit_tests $(OBJ) $(DIR_FILE) $(DIR_TESTS) $(CPPFLAGS) \
 	$(WFLAGS) $(LCRITER)
 
 tests_run:	unit_tests

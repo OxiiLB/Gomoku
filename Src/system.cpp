@@ -13,13 +13,32 @@
 #include <string>
 #include <vector>
 
+std::ostream &operator<<(std::ostream &os, const TILE_STATE &entry)
+{
+  switch (entry) {
+  case TILE_STATE::EMPTY:
+    os << "X";
+    break;
+  case TILE_STATE::ME:
+    os << "1";
+    break;
+  case TILE_STATE::PLAYER2:
+    os << "2";
+    break;
+  default:
+    os << "UNDEFINED";
+    break;
+  }
+  return os;
+}
+
 System::System() {}
 
 System::~System() {}
 
 void System::initiateStruct(gomoku_t *game)
 {
-  game->win = GAME_STATE::PLAY, game->map.resize(0);
+  game->state = GAME_STATE::PLAY, game->map.resize(0);
   game->size = 0;
   game->my_turn = false;
   game->me.x = 0;
@@ -67,21 +86,55 @@ void System::gameLoop()
       command.start(&game, entry);
     } else if (entry.front() == "TURN") {
       command.turn(&game, entry);
+    } else if (entry.front() == "INFO") {
+      command.info(&game, entry);
     } else if (entry.front() == "BEGIN") {
       command.begin(&game);
     } else if (entry.front() == "BOARD") {
       command.board(this, &game);
     } else if (entry.front() == "ABOUT") {
       command.about();
-    } else if (entry.front() == "END" || game.win == GAME_STATE::WIN || game.win == GAME_STATE::LOSE) {
+    }
+    if (entry.front() == "END" || game.state == GAME_STATE::WIN ||
+        game.state == GAME_STATE::LOSE) {
       isRunning = false;
     }
-    if (game.my_turn) {
-      game.my_turn = false;
-      std::cout << game.me.x << "," << game.me.y << std::endl;
+    if (game.state == GAME_STATE::PLAY && isRunning) {
+      if (game.global_info.game_type == GAME_TYPE::HUMAN)
+        displayGame(&game);
+      if (game.my_turn) {
+        game.my_turn = false;
+        std::cout << game.me.x << "," << game.me.y << std::endl;
+      }
     }
-
   }
 }
 
 gomoku_t *System::getGame() { return game; }
+
+void System::displayGame(gomoku_t *game)
+{
+  int space = 1;
+  for (int i = game->size; i > 9; i /= 10)
+    space++;
+
+  auto placeSpaceHeight = [](int x, int nbr) {
+    int remove_space = 0;
+    for (int i = nbr; i > 9; i /= 10)
+      remove_space++;
+    x -= remove_space;
+    for (int i = 0; i < x; i++)
+      std::cout << " ";
+  };
+
+  std::cout << std::endl;
+  for (int i = 0; i < game->size; i++) {
+    std::cout << i;
+    placeSpaceHeight(space, i);
+    std::cout << "| ";
+    for (int j = 0; j < game->size; j++) {
+      std::cout << game->map[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+}

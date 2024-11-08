@@ -73,7 +73,7 @@ typedef struct gomoku_s {
   std::vector<std::vector<TILE_STATE>> map;
   int size;
   bool my_turn;
-  GAME_STATE win;
+  GAME_STATE state;
   coord_t me;
   coord_t opponent;
   global_info_t global_info;

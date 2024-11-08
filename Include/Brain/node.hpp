@@ -19,7 +19,7 @@ class Node {
             : _gameState(gameState), _parent(parent), _lastMove(move), _value(0), _visits(0) { initUntriedMoves(); }
 
         bool isFullyExpanded() const { return _untriedMoves.empty(); }
-        bool isTerminal() const { return (_gameState.win != GAME_STATE::PLAY); }
+        bool isTerminal() const { return (_gameState.state != GAME_STATE::PLAY); }
 
         Node *expand();
         Node *findBestChild(double explorationParam = 1.41) const;

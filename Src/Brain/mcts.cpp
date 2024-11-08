@@ -27,7 +27,7 @@ double MCTS::simulate(Node *node)
 {
     gomoku_t simulatedState = node->getGameState();
 
-    while (simulatedState.win == GAME_STATE::PLAY) {
+    while (simulatedState.state == GAME_STATE::PLAY) {
         std::vector<std::pair<int, int>> availableMoves = _gameLogic.getAvailableMoves(simulatedState);
         std::pair<int, int> randomMove = availableMoves[rand() % availableMoves.size()];
 
@@ -36,12 +36,12 @@ double MCTS::simulate(Node *node)
         simulatedState.my_turn = !simulatedState.my_turn;
 
         if (_gameLogic.checkWin(simulatedState)) {
-            simulatedState.win = simulatedState.my_turn ? GAME_STATE::LOSE : GAME_STATE::WIN;
+            simulatedState.state = simulatedState.my_turn ? GAME_STATE::LOSE : GAME_STATE::WIN;
         } else if (_gameLogic.checkDraw(simulatedState)) {
-            simulatedState.win = GAME_STATE::LOSE;
+            simulatedState.state = GAME_STATE::LOSE;
         }
     }
-    return simulatedState.win == GAME_STATE::WIN ? 1.0 : (simulatedState.win == GAME_STATE::LOSE ? 0.0 : 0.5);
+    return simulatedState.state == GAME_STATE::WIN ? 1.0 : (simulatedState.state == GAME_STATE::LOSE ? 0.0 : 0.5);
 
 }
 

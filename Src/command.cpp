@@ -11,25 +11,6 @@ Command::Command() {}
 
 Command::~Command() {}
 
-std::ostream &operator<<(std::ostream &os, const TILE_STATE &entry)
-{
-  switch (entry) {
-  case TILE_STATE::EMPTY:
-    os << "EMPTY";
-    break;
-  case TILE_STATE::ME:
-    os << "ME";
-    break;
-  case TILE_STATE::PLAYER2:
-    os << "PLAYER2";
-    break;
-  default:
-    os << "UNDEFINED";
-    break;
-  }
-  return os;
-}
-
 void Command::start(gomoku_t *game, std::vector<std::string> entry)
 {
   if (entry.size() < 2) {
@@ -43,6 +24,7 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
   }
   game->map.resize(game->size,
                    std::vector<TILE_STATE>(game->size, TILE_STATE::EMPTY));
+  game->state = GAME_STATE::PLAY;
   std::cout << "OK - everything is good" << std::endl;
 }
 
@@ -126,5 +108,67 @@ void Command::error(COMMAND_ERROR command)
     break;
   default:
     break;
+  }
+}
+
+void Command::info(gomoku_t *game, std::vector<std::string> entry)
+{
+  if (entry.size() < 3) {
+    error(COMMAND_ERROR::START);
+    return;
+  }
+  int value = atoi(entry.at(2).c_str());
+  std::string command = entry.at(1);
+  if (command == "timeout_turn") {
+    game->global_info.timeout_turn = std::chrono::milliseconds(value);
+  } else if (command == "timeout_match") {
+    game->global_info.timeout_match = std::chrono::milliseconds(value);
+  } else if (command == "time_left") {
+    game->global_info.time_left = std::chrono::milliseconds(value);
+  } else if (command == "max_memory") {
+    game->global_info.max_memory = value;
+  } else if (command == "game_type") {
+    switch (value) {
+    case 0:
+      game->global_info.game_type = GAME_TYPE::HUMAN;
+      break;
+    case 1:
+      game->global_info.game_type = GAME_TYPE::BRAIN;
+      break;
+    case 2:
+      game->global_info.game_type = GAME_TYPE::TOURNAMENT;
+      break;
+    case 3:
+      game->global_info.game_type = GAME_TYPE::NETWORK_TOURNAMENT;
+      break;
+    default:
+      game->global_info.game_type = GAME_TYPE::HUMAN;
+      break;
+    }
+  } else if (command == "rule") {
+    switch (value) {
+    case 1:
+      game->global_info.rule = RULE::EXACTLY_FIVE;
+      break;
+    case 2:
+      game->global_info.rule = RULE::CONTINUOUS;
+      break;
+    case 4:
+      game->global_info.rule = RULE::RENJU;
+      break;
+    case 8:
+      game->global_info.rule = RULE::CARO;
+      break;
+    default:
+      game->global_info.rule = RULE::EXACTLY_FIVE;
+      break;
+    }
+  } else if (command == "evaluate") {
+    if (entry.size() < 4)
+      return;
+    game->global_info.evaluate.x = atoi(entry.at(2).c_str());
+    game->global_info.evaluate.y = atoi(entry.at(3).c_str());
+  } else if (command == "folder") {
+    game->global_info.folder = value;
   }
 }

@@ -34,6 +34,6 @@ $ ./PROJECT_NAME
 
 ## Overview
 ***
-Some examples of what the program should return, and all the differents interractions
+Some examples of what the program should return, and all the differents interactions
  
 il y a moins de choses mais la moitié servait à rien dans l'ancien
