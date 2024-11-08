@@ -32,7 +32,7 @@ LCRITER		= --coverage -lcriterion
 $(NAME): $(OBJ)
 	g++ -o $@ $^ $(CPPFLAGS) $(WFLAGS)
 
-debug: $(OBJ_SRC)
+debug: $(OBJ)
 	g++ -o $(NAME) $^ $(CPPFLAGS) $(WFLAGS) -ggdb3
 
 all: $(NAME)
@@ -48,7 +48,7 @@ re: fclean $(NAME)
 
 unit_tests:	fclean
 	mkdir unit_tests
-	g++ -o unit_tests/unit_tests $(DIR_SRC) $(DIR_TESTS) $(CPPFLAGS) \
+	g++ -o unit_tests/unit_tests $(DIR_FILE) $(DIR_TESTS) $(CPPFLAGS) \
 	$(WFLAGS) $(LCRITER)
 
 tests_run:	unit_tests
