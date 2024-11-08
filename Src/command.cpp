@@ -49,17 +49,20 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
 void Command::turn(gomoku_t *game, std::vector<std::string> entry)
 {
   if (entry.size() < 3) {
-    error(COMMAND_ERROR::START);
+    error(COMMAND_ERROR::TURN);
     return;
   }
   game->opponent.x = atoi(entry.at(1).c_str());
   game->opponent.y = atoi(entry.at(2).c_str());
   game->map[game->opponent.x][game->opponent.y] = TILE_STATE::PLAYER2;
+  game->my_turn = true;
 }
 
-void Command::begin() {
+void Command::begin(gomoku_t *game)
+{
   std::cout << "BEGIN" << std::endl;
   std::cout << "1, 1" << std::endl;
+  game->my_turn = false;
 }
 
 void Command::board(ISystem *system, gomoku_t *game)
@@ -84,10 +87,15 @@ void Command::board(ISystem *system, gomoku_t *game)
         error(COMMAND_ERROR::BOARD);
         return;
       }
-      if (player == 1)
+      if (player == 1) {
         game->map[x][y] = TILE_STATE::ME;
-      else
+        game->me.x = x;
+        game->me.y = y;
+      } else {
         game->map[x][y] = TILE_STATE::PLAYER2;
+        game->opponent.x = x;
+        game->opponent.y = y;
+      }
     }
   }
 }
@@ -107,6 +115,13 @@ void Command::error(COMMAND_ERROR command)
     break;
   case COMMAND_ERROR::BOARD:
     std::cout << "ERROR message - tile already played or argument invalid"
+              << std::endl;
+    break;
+  case COMMAND_ERROR::TURN:
+    std::cout << "ERROR message - invalid argument" << std::endl;
+    break;
+  case COMMAND_ERROR::BEGIN:
+    std::cout << "ERROR message - invalid argument or out of table"
               << std::endl;
     break;
   default:
