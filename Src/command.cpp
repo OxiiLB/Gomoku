@@ -16,16 +16,17 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
 {
   std::cout << entry.size() << std::endl;
   if (entry.size() < 2) {
-    error(COMMANDERROR::START);
+    error(COMMAND_ERROR::START);
     return;
   }
   game->size = atoi(entry.back().c_str());
   if (game->size < 5) {
-    error(COMMANDERROR::START);
+    error(COMMAND_ERROR::START);
     return;
   }
   std::cout << game->size << std::endl;
-  game->map.resize(game->size, std::vector<TILESTATE>(game->size, TILESTATE::EMPTY));
+  game->map.resize(game->size,
+                   std::vector<TILE_STATE>(game->size, TILE_STATE::EMPTY));
   std::cout << "OK - everything is good" << std::endl;
 }
 
@@ -36,7 +37,8 @@ void Command::turn(int x, int y)
 
 void Command::begin() { std::cout << "BEGIN" << std::endl; }
 
-void Command::board(ISystem *system, gomoku_t *game) {
+void Command::board(ISystem *system, gomoku_t *game)
+{
   std::cout << "BOARD" << std::endl;
   bool isRunning = true;
   while (isRunning) {
@@ -47,14 +49,15 @@ void Command::board(ISystem *system, gomoku_t *game) {
     if (std::strcmp("DONE\0", entry.front().c_str()) == 0)
       isRunning = false;
     else {
-      int x = atoi(entry.at(1).c_str());
-      int y = atoi(entry.at(2).c_str());
-      int player = atoi(entry.at(3).c_str());
-      std::cout << "BOARD " << x << " " << y << " PLAYER:" << player << std::endl;
-      if (player == 1)
-        game->map[x][y] = TILESTATE::ME;
-      else
-        game->map[x][y] = TILESTATE::PLAYER2;
+      // int x = atoi(entry.at(1).c_str());
+      // int y = atoi(entry.at(2).c_str());
+      // int player = atoi(entry.at(3).c_str());
+      // std::cout << "BOARD " << x << " " << y << " PLAYER:" << player <<
+      // std::endl;
+      //   if (player == 1)
+      //     game->map[x][y] = TILE_STATE::ME;
+      //   else
+      //     game->map[x][y] = TILE_STATE::PLAYER2;
     }
   }
 }
@@ -66,10 +69,10 @@ void Command::about()
             << std::endl;
 }
 
-void Command::error(COMMANDERROR command)
+void Command::error(COMMAND_ERROR command)
 {
   switch (command) {
-  case COMMANDERROR::START:
+  case COMMAND_ERROR::START:
     std::cout << "ERROR message - unsupported size or other error" << std::endl;
     break;
   default:
