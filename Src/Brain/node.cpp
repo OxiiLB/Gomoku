@@ -5,32 +5,67 @@
 ** node
 */
 
+#include <cmath>
+#include <limits>
+#include <cstdlib>
 #include "node.hpp"
 
-void Node::expand(int boardSize)
+// Adds all possible moves to _untriedMoves based on the empty spaces in the current state.
+void Node::initUntriedMoves()
 {
-    auto moves = _board.getAvailableMoves(boardSize);
+    int i = 0;
+    int j = 0;
 
-    for (const auto &move : moves) {
-        Board expandedBoard = _board;
-        expandedBoard.play(move.first, move.second);
-        _children.push_back(new Node(expandedBoard, this, move));
+    for (i = 0; i < _state.size; i++)
+    {
+        for (j = 0; j < _state.size; ++j)
+        {
+            if (_state.map[i][j] == TILE_STATE::EMPTY)
+            {
+                _untriedMoves.emplace_back(i, j);
+            }
+        }
     }
 }
 
-// Identifies & returns child node with highest average score per visit.
-Node *Node::selectBestChild()
+// Applies an untried move to the game state, then creates a new child node representing the new game state.
+Node *Node::expand()
 {
-    Node* bestNode = nullptr;
-    float bestAvgScore = 0;
-    float avgScore = 0;
+    if (_untriedMoves.empty())
+    {
+        return nullptr;
+    }
 
-    for (Node *child : _children) {
-        avgScore = static_cast<float>(child->_score / child->_visits);
-        if (avgScore > bestAvgScore) {
-            bestAvgScore = avgScore;
-            bestNode = child;
+    auto move = _untriedMoves.back();
+    _untriedMoves.pop_back();
+
+    gomoku_t newState = _state;
+
+    newState.map[move.first][move.second] =
+        (_state.turn % 2 == 0) ? TILE_STATE::ME : TILE_STATE::PLAYER2;
+    newState.turn++;
+
+    Node *child = new Node(newState, this);
+    _children.push_back(std::unique_ptr<Node>(child));
+
+    return child;
+}
+
+// Returns the child node with the best UCB1 value.
+Node *Node::findBestChild(double explorationParam) const
+{
+    Node *bestChild = nullptr;
+    double bestValue = -std::numeric_limits<double>::infinity();
+
+    for (const auto &child : _children)
+    {
+        double value = (child->_value / child->_visits) +
+            explorationParam * std::sqrt(std::log(_visits) / child->_visits);
+        if (value > bestValue)
+        {
+            bestValue = value;
+            bestChild = child.get();
         }
     }
-    return bestNode;
+    return bestChild;
 }

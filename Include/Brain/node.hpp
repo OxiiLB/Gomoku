@@ -7,27 +7,37 @@
 
 #pragma once
 
-#include "board.hpp"
 #include <vector>
+#include <memory>
+#include <utility>
+#include "struct.hpp"
 
 class Node
 {
-    public:
-        Board _board;
-        Node *_parent;
-        std::vector<Node *> _children;
-        std::pair<int, int> _move;
-        int _visits;
-        int _score;
+public:
+    Node(const gomoku_t &gameState, Node *parent = nullptr) : _state(gameState), _parent(parent), _value(0), _visits(0) { initUntriedMoves(); }
 
-        Node(Board board, Node *parent = nullptr, std::pair<int, int> move = {-1, -1})
-            : _board(board), _parent(parent), _move(move), _visits(0), _score(0) {}
+    bool isFullyExpanded() const { return _untriedMoves.empty(); }
+    bool isTerminal() const { return (_state.win != GAME_STATE::PLAY); }
 
-        bool hasChildren() { return (!_children.empty()); }
+    Node *expand();
+    Node *findBestChild(double explorationParam = 1.41) const;
 
-        void expand(int boardSize);
+    void updateValue(double result) { _value += result; }
+    void updateNbOfVisits() { _visits++; }
 
-        Node *selectBestChild();
+    double getValue() const { return _value; }
+    int getNbOfVisits() const { return _visits; }
+    gomoku_t getState() const { return _state; }
+    std::pair<int, int> getMove() const { return {_state.x, _state.y}; }
 
-    private:
+private:
+    gomoku_t _state;
+    Node *_parent;
+    double _value;
+    int _visits;
+    std::vector<std::unique_ptr<Node>> _children;
+    std::vector<std::pair<int, int>> _untriedMoves;
+
+    void initUntriedMoves();
 };
