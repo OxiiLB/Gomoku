@@ -11,9 +11,11 @@ unit-test*
 unit-tests
 project
 a.out
+board.log
+config.ini
 
 # Executable ignored
 pbrain-gomoku-ai
 
 #folder
-liskvork-0.4.3-src/
+liskvork*
