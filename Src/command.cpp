@@ -17,15 +17,42 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
     error(COMMAND_ERROR::START);
     return;
   }
-  game->size = atoi(entry.back().c_str());
-  if (game->size < 5) {
+  game->size.x = atoi(entry.back().c_str());
+  game->size.y = atoi(entry.back().c_str());
+  if (game->size.x < 5) {
     error(COMMAND_ERROR::START);
     return;
   }
-  game->map.resize(game->size,
-                   std::vector<TILE_STATE>(game->size, TILE_STATE::EMPTY));
+  game->map.resize(game->size.y,
+                   std::vector<TILE_STATE>(game->size.x, TILE_STATE::EMPTY));
   game->state = GAME_STATE::PLAY;
   std::cout << "OK - everything is good" << std::endl;
+}
+
+void Command::rectStart(gomoku_t *game, std::vector<std::string> entry)
+{
+  if (entry.size() < 3) {
+    error(COMMAND_ERROR::START);
+    return;
+  }
+  game->size.x = atoi(entry.at(1).c_str());
+  game->size.y = atoi(entry.at(2).c_str());
+  if (game->size.x < 5 || game->size.y < 5) {
+    error(COMMAND_ERROR::RECTSTART);
+    return;
+  }
+  game->map.resize(game->size.y,
+                   std::vector<TILE_STATE>(game->size.x, TILE_STATE::EMPTY));
+  game->state = GAME_STATE::PLAY;
+  std::cout << "OK - parameters are good" << std::endl;
+}
+
+void Command::reStart(gomoku_t *game)
+{
+  game->map.clear();
+  game->map.resize(game->size.y,
+                   std::vector<TILE_STATE>(game->size.x, TILE_STATE::EMPTY));
+  std::cout << "OK" << std::endl;
 }
 
 void Command::turn(gomoku_t *game, std::vector<std::string> entry)
@@ -36,8 +63,15 @@ void Command::turn(gomoku_t *game, std::vector<std::string> entry)
   }
   game->opponent.x = atoi(entry.at(1).c_str());
   game->opponent.y = atoi(entry.at(2).c_str());
+  if (game->opponent.x < 0 || game->opponent.y < 0 ||
+      game->opponent.x >= game->size.x || game->opponent.y >= game->size.y ||
+      game->map[game->opponent.x][game->opponent.y] != TILE_STATE::EMPTY) {
+    error(COMMAND_ERROR::TURN);
+    return;
+  }
   game->map[game->opponent.x][game->opponent.y] = TILE_STATE::PLAYER2;
   game->my_turn = true;
+  std::cout << game->opponent.x << "," << game->opponent.y << std::endl;
 }
 
 void Command::begin(gomoku_t *game)
@@ -58,13 +92,14 @@ void Command::board(ISystem *system, gomoku_t *game)
       isRunning = false;
     else {
       if (entry.size() < 3) {
+        std::cout << "ERROR message - invalid argument" << std::endl;
         error(COMMAND_ERROR::BOARD);
         return;
       }
       int x = atoi(entry.at(0).c_str());
       int y = atoi(entry.at(1).c_str());
       int player = atoi(entry.at(2).c_str());
-      if (x < 0 || y < 0 || x >= game->size || y >= game->size ||
+      if (x < 0 || y < 0 || x >= game->size.x || y >= game->size.y ||
           game->map[x][y] != TILE_STATE::EMPTY) {
         error(COMMAND_ERROR::BOARD);
         return;
@@ -87,28 +122,6 @@ void Command::about()
   std::cout << "name=\"pbrain-gomoku-ai\", version=\"1.0\", author=\"Dvaking, "
                "Oxi, Alea\", country=\"FR\""
             << std::endl;
-}
-
-void Command::error(COMMAND_ERROR command)
-{
-  switch (command) {
-  case COMMAND_ERROR::START:
-    std::cout << "ERROR message - unsupported size or other error" << std::endl;
-    break;
-  case COMMAND_ERROR::BOARD:
-    std::cout << "ERROR message - tile already played or argument invalid"
-              << std::endl;
-    break;
-  case COMMAND_ERROR::TURN:
-    std::cout << "ERROR message - invalid argument" << std::endl;
-    break;
-  case COMMAND_ERROR::BEGIN:
-    std::cout << "ERROR message - invalid argument or out of table"
-              << std::endl;
-    break;
-  default:
-    break;
-  }
 }
 
 void Command::info(gomoku_t *game, std::vector<std::string> entry)
@@ -170,5 +183,32 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
     game->global_info.evaluate.y = atoi(entry.at(3).c_str());
   } else if (command == "folder") {
     game->global_info.folder = value;
+  }
+}
+
+void Command::error(COMMAND_ERROR command)
+{
+  switch (command) {
+  case COMMAND_ERROR::START:
+    std::cout << "ERROR message - unsupported size or other error" << std::endl;
+    break;
+  case COMMAND_ERROR::BOARD:
+    std::cout << "ERROR message - tile already played or argument invalid"
+              << std::endl;
+    break;
+  case COMMAND_ERROR::TURN:
+    std::cout << "ERROR message - invalid argument" << std::endl;
+    break;
+  case COMMAND_ERROR::BEGIN:
+    std::cout << "ERROR message - invalid argument or out of table"
+              << std::endl;
+    break;
+  case COMMAND_ERROR::RECTSTART: {
+    std::cout
+        << "ERROR message - rectangular board is not supported or other error"
+        << std::endl;
+  } break;
+  default:
+    break;
   }
 }

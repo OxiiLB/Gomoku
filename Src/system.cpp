@@ -39,7 +39,8 @@ System::~System() {}
 void System::initiateStruct(gomoku_t *game)
 {
   game->state = GAME_STATE::PLAY, game->map.resize(0);
-  game->size = 0;
+  game->size.x = 0;
+  game->size.y = 0;
   game->my_turn = false;
   game->me.x = 0;
   game->me.y = 0;
@@ -62,9 +63,14 @@ std::vector<std::string> System::splitString(const std::string &str)
   std::istringstream iss(str);
   std::vector<std::string> result;
   std::string word;
-  while (iss >> word) {
-    word.erase(std::remove(word.begin(), word.end(), ','), word.end());
-    result.push_back(word);
+  while (std::getline(iss, word, ' ')) {
+    std::istringstream subiss(word);
+    std::string subword;
+    while (std::getline(subiss, subword, ',')) {
+      if (!subword.empty()) {
+        result.push_back(subword);
+      }
+    }
   }
   return result;
 }
@@ -95,8 +101,12 @@ void System::gameLoop()
     } else if (entry.front() == "ABOUT") {
       command.about();
     } else if (entry.front() == "END" || game.state == GAME_STATE::WIN ||
-        game.state == GAME_STATE::LOSE) {
+               game.state == GAME_STATE::LOSE) {
       isRunning = false;
+    } else if (entry.front() == "RECTSTART") {
+      command.rectStart(&game, entry);
+    } else if (entry.front() == "RESTART") {
+      command.reStart(&game);
     }
     if (game.state == GAME_STATE::PLAY && isRunning) {
       if (game.global_info.game_type == GAME_TYPE::HUMAN)
@@ -114,7 +124,7 @@ gomoku_t *System::getGame() { return game; }
 void System::displayGame(gomoku_t *game)
 {
   int space = 1;
-  for (int i = game->size; i > 9; i /= 10)
+  for (int i = game->size.y; i > 9; i /= 10)
     space++;
 
   auto placeSpaceHeight = [](int x, int nbr) {
@@ -127,13 +137,14 @@ void System::displayGame(gomoku_t *game)
   };
 
   std::cout << std::endl;
-  for (int i = 0; i < game->size; i++) {
+  for (int i = 0; i < game->size.y; i++) {
     std::cout << i;
     placeSpaceHeight(space, i);
     std::cout << "| ";
-    for (int j = 0; j < game->size; j++) {
+    for (int j = 0; j < game->size.x; j++) {
       std::cout << game->map[i][j] << " ";
     }
     std::cout << std::endl;
   }
+  std::cout << std::endl;
 }

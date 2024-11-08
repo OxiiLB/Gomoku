@@ -15,6 +15,8 @@ public:
   Command();
   ~Command();
   void start(gomoku_t *game, std::vector<std::string> entry) override;
+  void rectStart(gomoku_t *game, std::vector<std::string> entry) override;
+  void reStart(gomoku_t *game) override;
   void turn(gomoku_t *game, std::vector<std::string> entry) override;
   void info(gomoku_t *game, std::vector<std::string> entry) override;
   void begin(gomoku_t *game) override;
