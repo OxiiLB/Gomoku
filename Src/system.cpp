@@ -94,8 +94,7 @@ void System::gameLoop()
       command.board(this, &game);
     } else if (entry.front() == "ABOUT") {
       command.about();
-    }
-    if (entry.front() == "END" || game.state == GAME_STATE::WIN ||
+    } else if (entry.front() == "END" || game.state == GAME_STATE::WIN ||
         game.state == GAME_STATE::LOSE) {
       isRunning = false;
     }
