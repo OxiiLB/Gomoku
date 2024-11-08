@@ -15,7 +15,7 @@ public:
   Command();
   ~Command();
   void start(gomoku_t *game, std::vector<std::string> entry) override;
-  void turn(int x, int y) override;
+  void turn(gomoku_t *game, std::vector<std::string> entry) override;
   void begin() override;
   void board(ISystem *system, gomoku_t *game) override;
   void about() override;

@@ -8,7 +8,6 @@
 #include "system.hpp"
 #include "command.hpp"
 #include <algorithm>
-#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -23,10 +22,12 @@ void System::initiateStruct(gomoku_t *game)
   game->win = GAME_STATE::PLAY, game->map.resize(0);
   game->player = 0;
   game->size = 0;
-  game->turn = 0;
+  game->my_turn = false;
   game->win_pos = NULL;
-  game->x = 0;
-  game->y = 0;
+  game->me.x = 0;
+  game->me.y = 0;
+  game->opponent.x = 0;
+  game->opponent.y = 0;
 }
 
 std::vector<std::string> System::splitString(const std::string &str)
@@ -37,7 +38,6 @@ std::vector<std::string> System::splitString(const std::string &str)
   while (iss >> word) {
     word.erase(std::remove(word.begin(), word.end(), ','), word.end());
     result.push_back(word);
-    std::cout << "splitString: " << word << std::endl;
   }
   return result;
 }
@@ -54,20 +54,24 @@ void System::gameLoop()
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
 
-    if (std::strcmp("START\0", entry.front().c_str()) == 0) {
-      std::cout << "START" << std::endl;
+    if (entry.front() == "START") {
       command.start(&game, entry);
-    } else if (std::strcmp("TURN\0", entry.front().c_str()) == 0) {
-      command.turn(9, 9);
-    } else if (std::strcmp("BEGIN\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "TURN") {
+      command.turn(&game, entry);
+    } else if (entry.front() == "BEGIN") {
       command.begin();
-    } else if (std::strcmp("BOARD\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "BOARD") {
       command.board(this, &game);
-    } else if (std::strcmp("ABOUT\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "ABOUT") {
       command.about();
-    } else if (std::strcmp("END\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "END" || game.win == GAME_STATE::WIN || game.win == GAME_STATE::LOSE) {
       isRunning = false;
     }
+    if (game.my_turn) {
+      game.my_turn = false;
+      std::cout << game.me.x << "," << game.me.y << std::endl;
+    }
+
   }
 }
 
