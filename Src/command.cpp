@@ -13,12 +13,14 @@ Command::~Command() {}
 
 void Command::start(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 2) {
+  if (entry.size() < 2)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
   game->size = atoi(entry.back().c_str());
-  if (game->size < 5) {
+  if (game->size < 5)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
@@ -30,7 +32,8 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
 
 void Command::turn(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 3) {
+  if (entry.size() < 3)
+  {
     error(COMMAND_ERROR::TURN);
     return;
   }
@@ -50,14 +53,17 @@ void Command::begin(gomoku_t *game)
 void Command::board(ISystem *system, gomoku_t *game)
 {
   bool isRunning = true;
-  while (isRunning) {
+  while (isRunning)
+  {
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = system->splitString(line);
     if (entry.at(0) == "DONE")
       isRunning = false;
-    else {
-      if (entry.size() < 3) {
+    else
+    {
+      if (entry.size() < 3)
+      {
         error(COMMAND_ERROR::BOARD);
         return;
       }
@@ -65,15 +71,19 @@ void Command::board(ISystem *system, gomoku_t *game)
       int y = atoi(entry.at(1).c_str());
       int player = atoi(entry.at(2).c_str());
       if (x < 0 || y < 0 || x >= game->size || y >= game->size ||
-          game->map[x][y] != TILE_STATE::EMPTY) {
+          game->map[x][y] != TILE_STATE::EMPTY)
+      {
         error(COMMAND_ERROR::BOARD);
         return;
       }
-      if (player == 1) {
+      if (player == 1)
+      {
         game->map[x][y] = TILE_STATE::ME;
         game->me.x = x;
         game->me.y = y;
-      } else {
+      }
+      else
+      {
         game->map[x][y] = TILE_STATE::PLAYER2;
         game->opponent.x = x;
         game->opponent.y = y;
@@ -91,7 +101,8 @@ void Command::about()
 
 void Command::error(COMMAND_ERROR command)
 {
-  switch (command) {
+  switch (command)
+  {
   case COMMAND_ERROR::START:
     std::cout << "ERROR message - unsupported size or other error" << std::endl;
     break;
@@ -113,22 +124,33 @@ void Command::error(COMMAND_ERROR command)
 
 void Command::info(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 3) {
+  if (entry.size() < 3)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
   int value = atoi(entry.at(2).c_str());
   std::string command = entry.at(1);
-  if (command == "timeout_turn") {
+  if (command == "timeout_turn")
+  {
     game->global_info.timeout_turn = std::chrono::milliseconds(value);
-  } else if (command == "timeout_match") {
+  }
+  else if (command == "timeout_match")
+  {
     game->global_info.timeout_match = std::chrono::milliseconds(value);
-  } else if (command == "time_left") {
+  }
+  else if (command == "time_left")
+  {
     game->global_info.time_left = std::chrono::milliseconds(value);
-  } else if (command == "max_memory") {
+  }
+  else if (command == "max_memory")
+  {
     game->global_info.max_memory = value;
-  } else if (command == "game_type") {
-    switch (value) {
+  }
+  else if (command == "game_type")
+  {
+    switch (value)
+    {
     case 0:
       game->global_info.game_type = GAME_TYPE::HUMAN;
       break;
@@ -145,8 +167,11 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
       game->global_info.game_type = GAME_TYPE::HUMAN;
       break;
     }
-  } else if (command == "rule") {
-    switch (value) {
+  }
+  else if (command == "rule")
+  {
+    switch (value)
+    {
     case 1:
       game->global_info.rule = RULE::EXACTLY_FIVE;
       break;
@@ -163,12 +188,16 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
       game->global_info.rule = RULE::EXACTLY_FIVE;
       break;
     }
-  } else if (command == "evaluate") {
+  }
+  else if (command == "evaluate")
+  {
     if (entry.size() < 4)
       return;
     game->global_info.evaluate.x = atoi(entry.at(2).c_str());
     game->global_info.evaluate.y = atoi(entry.at(3).c_str());
-  } else if (command == "folder") {
+  }
+  else if (command == "folder")
+  {
     game->global_info.folder = value;
   }
 }

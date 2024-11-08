@@ -7,6 +7,7 @@
 
 #include "system.hpp"
 #include "command.hpp"
+#include <thread>
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -15,7 +16,8 @@
 
 std::ostream &operator<<(std::ostream &os, const TILE_STATE &entry)
 {
-  switch (entry) {
+  switch (entry)
+  {
   case TILE_STATE::EMPTY:
     os << "X";
     break;
@@ -62,11 +64,24 @@ std::vector<std::string> System::splitString(const std::string &str)
   std::istringstream iss(str);
   std::vector<std::string> result;
   std::string word;
-  while (iss >> word) {
+  while (iss >> word)
+  {
     word.erase(std::remove(word.begin(), word.end(), ','), word.end());
     result.push_back(word);
   }
   return result;
+}
+
+void System::startBakcgroundThread()
+{
+  bgThread = std::thread([&]()
+                         {
+        while (isRunning)
+        {
+            std::lock_guard<std::mutex> lock(gameMutex);
+            defense->executeDefense();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } });
 }
 
 void System::gameLoop()
@@ -76,38 +91,58 @@ void System::gameLoop()
   gomoku_t game;
   initiateStruct(&game);
 
-  while (isRunning) {
+  this->defense = std::make_unique<defenseAlgorithm>(&game);
 
+  this->startBakcgroundThread();
+
+      while (isRunning)
+  {
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
 
-    if (entry.front() == "START") {
+    if (entry.front() == "START")
+    {
       command.start(&game, entry);
-    } else if (entry.front() == "TURN") {
+    }
+    else if (entry.front() == "TURN")
+    {
       command.turn(&game, entry);
-    } else if (entry.front() == "INFO") {
+    }
+    else if (entry.front() == "INFO")
+    {
       command.info(&game, entry);
-    } else if (entry.front() == "BEGIN") {
+    }
+    else if (entry.front() == "BEGIN")
+    {
       command.begin(&game);
-    } else if (entry.front() == "BOARD") {
+    }
+    else if (entry.front() == "BOARD")
+    {
       command.board(this, &game);
-    } else if (entry.front() == "ABOUT") {
+    }
+    else if (entry.front() == "ABOUT")
+    {
       command.about();
     }
     if (entry.front() == "END" || game.state == GAME_STATE::WIN ||
-        game.state == GAME_STATE::LOSE) {
+        game.state == GAME_STATE::LOSE)
+    {
       isRunning = false;
     }
-    if (game.state == GAME_STATE::PLAY && isRunning) {
+    if (game.state == GAME_STATE::PLAY && isRunning)
+    {
       if (game.global_info.game_type == GAME_TYPE::HUMAN)
         displayGame(&game);
-      if (game.my_turn) {
+      if (game.my_turn)
+      {
         game.my_turn = false;
         std::cout << game.me.x << "," << game.me.y << std::endl;
       }
     }
   }
+  if (bgThread.joinable())
+    bgThread.join();
 }
 
 gomoku_t *System::getGame() { return game; }
@@ -118,7 +153,8 @@ void System::displayGame(gomoku_t *game)
   for (int i = game->size; i > 9; i /= 10)
     space++;
 
-  auto placeSpaceHeight = [](int x, int nbr) {
+  auto placeSpaceHeight = [](int x, int nbr)
+  {
     int remove_space = 0;
     for (int i = nbr; i > 9; i /= 10)
       remove_space++;
@@ -128,11 +164,13 @@ void System::displayGame(gomoku_t *game)
   };
 
   std::cout << std::endl;
-  for (int i = 0; i < game->size; i++) {
+  for (int i = 0; i < game->size; i++)
+  {
     std::cout << i;
     placeSpaceHeight(space, i);
     std::cout << "| ";
-    for (int j = 0; j < game->size; j++) {
+    for (int j = 0; j < game->size; j++)
+    {
       std::cout << game->map[i][j] << " ";
     }
     std::cout << std::endl;
