@@ -60,7 +60,7 @@ void System::gameLoop()
     } else if (entry.front() == "TURN") {
       command.turn(&game, entry);
     } else if (entry.front() == "BEGIN") {
-      command.begin();
+      command.begin(&game);
     } else if (entry.front() == "BOARD") {
       command.board(this, &game);
     } else if (entry.front() == "ABOUT") {
