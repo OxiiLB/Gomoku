@@ -54,18 +54,20 @@ void System::gameLoop()
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
 
-    if (std::strcmp("START\0", entry.front().c_str()) == 0) {
+    std::cout << "command: " << entry.front() << std::endl;
+
+    if (entry.front() == "START") {
       std::cout << "START" << std::endl;
       command.start(&game, entry);
-    } else if (std::strcmp("TURN\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "TURN\0") {
       command.turn(9, 9);
-    } else if (std::strcmp("BEGIN\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "BEGIN\0") {
       command.begin();
-    } else if (std::strcmp("BOARD\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "BOARD\0") {
       command.board(this, &game);
-    } else if (std::strcmp("ABOUT\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "ABOUT\0") {
       command.about();
-    } else if (std::strcmp("END\0", entry.front().c_str()) == 0) {
+    } else if (entry.front() == "END\0") {
       isRunning = false;
     }
   }
