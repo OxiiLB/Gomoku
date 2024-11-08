@@ -5,7 +5,9 @@
 ## makefile
 ##
 
-SRC			=	main.cpp
+SRC			=	main.cpp		\
+				command.cpp		\
+				system.cpp		\
 
 TEST		=	test.cpp
 
@@ -17,7 +19,7 @@ OBJ			=	$(OBJ_SRC)
 
 NAME		=	pbrain-gomoku-ai
 
-CPPFLAGS	=	-I./Include/
+CPPFLAGS	=	-I./Include/ -I./Include/Interface
 
 WFLAGS		=	-W -Wall -Wextra -Werror
 

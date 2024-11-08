@@ -9,7 +9,8 @@
 *.ini
 
 # Directory ignored
-zig
+zig/
+liskvork-0.4.3-src/
 
 # File ignored
 coding-style*
