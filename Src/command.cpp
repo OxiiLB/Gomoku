@@ -48,7 +48,6 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
 
 void Command::turn(gomoku_t *game, std::vector<std::string> entry)
 {
-  std::cout << "[---------TURN---------]" << std::endl;
   if (entry.size() < 3) {
     error(COMMAND_ERROR::START);
     return;
