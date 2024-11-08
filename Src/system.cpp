@@ -7,8 +7,12 @@
 
 #include "system.hpp"
 #include "command.hpp"
+#include <algorithm>
 #include <cstring>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
 System::System() {}
 
@@ -16,7 +20,7 @@ System::~System() {}
 
 void System::initiateStruct(gomoku_t *game)
 {
-  game->win = GAMESTATE::PLAY, game->map.resize(0);
+  game->win = GAME_STATE::PLAY, game->map.resize(0);
   game->player = 0;
   game->size = 0;
   game->turn = 0;
@@ -30,8 +34,11 @@ std::vector<std::string> System::splitString(const std::string &str)
   std::istringstream iss(str);
   std::vector<std::string> result;
   std::string word;
-  while (iss >> word)
+  while (iss >> word) {
+    word.erase(std::remove(word.begin(), word.end(), ','), word.end());
     result.push_back(word);
+    std::cout << "splitString: " << word << std::endl;
+  }
   return result;
 }
 
