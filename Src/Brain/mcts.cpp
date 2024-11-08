@@ -25,7 +25,7 @@ Node *MCTS::expand(Node *node)
 
 double MCTS::simulate(Node *node)
 {
-    gomoku_t simulatedState = node->getState();
+    gomoku_t simulatedState = node->getGameState();
 
     while (simulatedState.win == GAME_STATE::PLAY) {
         std::vector<std::pair<int, int>> availableMoves = _gameLogic.getAvailableMoves(simulatedState);

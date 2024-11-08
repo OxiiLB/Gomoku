@@ -10,6 +10,9 @@ SRC			=	main.cpp		\
 
 FILE		=	command.cpp		\
 				system.cpp		\
+				Brain/game_logic.cpp	\
+				Brain/mcts.cpp	\
+				Brain/node.cpp	\
 
 TEST		=	test.cpp
 
@@ -23,11 +26,11 @@ OBJ			=	$(OBJ_SRC) $(OBJ_FILE)
 
 NAME		=	pbrain-gomoku-ai
 
-CPPFLAGS	=	-I./Include/ -I./Include/Interface
+CPPFLAGS	=	-I./Include/ -I./Include/Interface -I./Include/Brain
 
 WFLAGS		=	-W -Wall -Wextra -Werror
 
-LCRITER		= --coverage -lcriterion
+LCRITER		= $(shell pkg-config --libs --cflags criterion) --coverage
 
 $(NAME): $(OBJ)
 	g++ -o $@ $^ $(CPPFLAGS) $(WFLAGS)
@@ -47,8 +50,8 @@ fclean: clean
 re: fclean $(NAME)
 
 unit_tests:	fclean
-	mkdir unit_tests
-	g++ -o unit_tests/unit_tests $(DIR_SRC) $(DIR_TESTS) $(CPPFLAGS) \
+	mkdir -p unit_tests
+	g++ -o unit_tests/unit_tests $(OBJ) $(DIR_TESTS) $(CPPFLAGS) \
 	$(WFLAGS) $(LCRITER)
 
 tests_run:	unit_tests

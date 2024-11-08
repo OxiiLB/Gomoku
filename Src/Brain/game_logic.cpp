@@ -7,15 +7,15 @@
 
 #include "game_logic.hpp"
 
-std::vector<std::pair<int, int>> GameLogic::getAvailableMoves(const gomoku_t &state) const
+std::vector<std::pair<int, int>> GameLogic::getAvailableMoves(const gomoku_t &gameState) const
 {
     int i = 0;
     int j = 0;
     std::vector<std::pair<int, int>> moves;
 
-    for (i = 0; i < state.size; ++i) {
-        for (j = 0; j < state.size; ++j) {
-            if (state.map[i][j] == TILE_STATE::EMPTY) {
+    for (i = 0; i < gameState.size; ++i) {
+        for (j = 0; j < gameState.size; ++j) {
+            if (gameState.map[i][j] == TILE_STATE::EMPTY) {
                 moves.push_back({i, j});
             }
         }
@@ -25,55 +25,55 @@ std::vector<std::pair<int, int>> GameLogic::getAvailableMoves(const gomoku_t &st
 }
 
 // Check for a sequence of 5
-bool GameLogic::checkWin(const gomoku_t &state) const
+bool GameLogic::checkWin(const gomoku_t &gameState) const
 {
     int i = 0;
     int j = 0;
 
     // Horizontal
-    for (i = 0; i < state.size; ++i) {
-        for (j = 0; j < state.size - 4; ++j) {
-            if (state.map[i][j] != TILE_STATE::EMPTY &&
-                state.map[i][j] == state.map[i][j + 1] &&
-                state.map[i][j] == state.map[i][j + 2] &&
-                state.map[i][j] == state.map[i][j + 3] &&
-                state.map[i][j] == state.map[i][j + 4]) {
+    for (i = 0; i < gameState.size; ++i) {
+        for (j = 0; j < gameState.size - 4; ++j) {
+            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
+                gameState.map[i][j] == gameState.map[i][j + 1] &&
+                gameState.map[i][j] == gameState.map[i][j + 2] &&
+                gameState.map[i][j] == gameState.map[i][j + 3] &&
+                gameState.map[i][j] == gameState.map[i][j + 4]) {
                 return true;
             }
         }
     }
     // Vertical
-    for (i = 0; i < state.size - 4; ++i) {
-        for (j = 0; j < state.size; ++j) {
-            if (state.map[i][j] != TILE_STATE::EMPTY &&
-                state.map[i][j] == state.map[i + 1][j] &&
-                state.map[i][j] == state.map[i + 2][j] &&
-                state.map[i][j] == state.map[i + 3][j] &&
-                state.map[i][j] == state.map[i + 4][j]) {
+    for (i = 0; i < gameState.size - 4; ++i) {
+        for (j = 0; j < gameState.size; ++j) {
+            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
+                gameState.map[i][j] == gameState.map[i + 1][j] &&
+                gameState.map[i][j] == gameState.map[i + 2][j] &&
+                gameState.map[i][j] == gameState.map[i + 3][j] &&
+                gameState.map[i][j] == gameState.map[i + 4][j]) {
                 return true;
             }
         }
     }
     // Diagonal
-    for (i = 0; i < state.size - 4; ++i) {
-        for (j = 0; j < state.size - 4; ++j) {
-            if (state.map[i][j] != TILE_STATE::EMPTY &&
-                state.map[i][j] == state.map[i + 1][j + 1] &&
-                state.map[i][j] == state.map[i + 2][j + 2] &&
-                state.map[i][j] == state.map[i + 3][j + 3] &&
-                state.map[i][j] == state.map[i + 4][j + 4]) {
+    for (i = 0; i < gameState.size - 4; ++i) {
+        for (j = 0; j < gameState.size - 4; ++j) {
+            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
+                gameState.map[i][j] == gameState.map[i + 1][j + 1] &&
+                gameState.map[i][j] == gameState.map[i + 2][j + 2] &&
+                gameState.map[i][j] == gameState.map[i + 3][j + 3] &&
+                gameState.map[i][j] == gameState.map[i + 4][j + 4]) {
                 return true;
             }
         }
     }
     // Other diagonal
-    for (i = 0; i < state.size - 4; ++i) {
-        for (j = 4; j < state.size; ++j) {
-            if (state.map[i][j] != TILE_STATE::EMPTY &&
-                state.map[i][j] == state.map[i + 1][j - 1] &&
-                state.map[i][j] == state.map[i + 2][j - 2] &&
-                state.map[i][j] == state.map[i + 3][j - 3] &&
-                state.map[i][j] == state.map[i + 4][j - 4]) {
+    for (i = 0; i < gameState.size - 4; ++i) {
+        for (j = 4; j < gameState.size; ++j) {
+            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
+                gameState.map[i][j] == gameState.map[i + 1][j - 1] &&
+                gameState.map[i][j] == gameState.map[i + 2][j - 2] &&
+                gameState.map[i][j] == gameState.map[i + 3][j - 3] &&
+                gameState.map[i][j] == gameState.map[i + 4][j - 4]) {
                 return true;
             }
         }
@@ -83,14 +83,14 @@ bool GameLogic::checkWin(const gomoku_t &state) const
 }
 
 // Check if current game state is at a draw
-bool GameLogic::checkDraw(const gomoku_t &state) const
+bool GameLogic::checkDraw(const gomoku_t &gameState) const
 {
     int i = 0;
     int j = 0;
 
-    for (i = 0; i < state.size; ++i) {
-        for (j = 0; j < state.size; ++j) {
-            if (state.map[i][j] == TILE_STATE::EMPTY) {
+    for (i = 0; i < gameState.size; ++i) {
+        for (j = 0; j < gameState.size; ++j) {
+            if (gameState.map[i][j] == TILE_STATE::EMPTY) {
                 return false;
             }
         }
