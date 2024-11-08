@@ -20,14 +20,22 @@ System::~System() {}
 void System::initiateStruct(gomoku_t *game)
 {
   game->win = GAME_STATE::PLAY, game->map.resize(0);
-  game->player = 0;
   game->size = 0;
   game->my_turn = false;
-  game->win_pos = NULL;
   game->me.x = 0;
   game->me.y = 0;
   game->opponent.x = 0;
   game->opponent.y = 0;
+  game->map.resize(0);
+  game->global_info.timeout_turn = std::chrono::milliseconds(0);
+  game->global_info.timeout_match = std::chrono::milliseconds(0);
+  game->global_info.max_memory = 0;
+  game->global_info.time_left = std::chrono::milliseconds(0);
+  game->global_info.game_type = GAME_TYPE::HUMAN;
+  game->global_info.rule = RULE::EXACTLY_FIVE;
+  game->global_info.evaluate.x = 0;
+  game->global_info.evaluate.y = 0;
+  game->global_info.folder = 0;
 }
 
 std::vector<std::string> System::splitString(const std::string &str)
