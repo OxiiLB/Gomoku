@@ -6,5 +6,11 @@
 */
 
 #include "proto.hpp"
+#include "system.hpp"
 
-int main(void) { return OK; }
+int main(void)
+{
+  System sys;
+
+  sys.gameLoop();
+}
