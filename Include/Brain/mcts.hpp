@@ -7,15 +7,24 @@
 
 #pragma once
 
+#include <random>
+#include <chrono>
 #include "node.hpp"
+#include "game_logic.hpp"
 
 class MCTS {
     public:
-        Node *run(Board startingBoard, int boardSize, int iterations);
+        MCTS(const gomoku_t &game) : _root(nullptr), _timeLimit(game.global_info.timeout_turn.count() / 1000.0), _gameLogic() {}
+
+        std::pair<int, int> findBestMove(gomoku_t &game);
 
     private:
-        float calculate(Node *node, int parentVisits, float explorationParam = 1.4);
+        double _timeLimit;
+        std::unique_ptr<Node> _root;
+        GameLogic _gameLogic;
+
         Node *select(Node *node);
-        void expand(Node *node, int boardSize);
-        void backpropagate(Node *node, int result);
+        Node *expand(Node *node);
+        double simulate(Node *node);
+        void backPropagate(Node *node, double result);
 };

@@ -5,8 +5,7 @@
 ** proto
 */
 
-#ifndef PROTO_HPP_
-#define PROTO_HPP_
+#pragma once
+
 #include "macro.hpp"
 
-#endif /* !PROTO_HPP_ */

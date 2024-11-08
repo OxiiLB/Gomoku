@@ -33,22 +33,21 @@ Node *Node::expand()
 {
     if (_untriedMoves.empty())
     {
-        return nullptr;
+        return this;
     }
 
-    auto move = _untriedMoves.back();
+    std::pair<int, int> move = _untriedMoves.back();
     _untriedMoves.pop_back();
 
-    gomoku_t newState = _state;
+    gomoku_t newGameState = _state;
 
-    newState.map[move.first][move.second] =
-        (_state.turn % 2 == 0) ? TILE_STATE::ME : TILE_STATE::PLAYER2;
-    newState.turn++;
+    newGameState.map[move.first][move.second] = (_state.my_turn ? TILE_STATE::ME : TILE_STATE::PLAYER2);
+    newGameState.my_turn = !newGameState.my_turn;
 
-    Node *child = new Node(newState, this);
-    _children.push_back(std::unique_ptr<Node>(child));
+    auto child = std::make_unique<Node>(newGameState, this, move);
+    _children.push_back(std::move(child));
 
-    return child;
+    return _children.back().get();
 }
 
 // Returns the child node with the best UCB1 value.

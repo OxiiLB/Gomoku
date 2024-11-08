@@ -5,11 +5,8 @@
 ** macro
 */
 
-#ifndef MACRO_HPP_
-#define MACRO_HPP_
+#pragma once
 
   /* error or fine */
   #define KO -1
   #define OK 0
-
-#endif /* !MACRO_HPP_ */
