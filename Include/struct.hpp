@@ -11,7 +11,7 @@
 
 enum class COMMAND_ERROR {
   START,
-  BEGIN,
+  BOARD,
 };
 
 enum class GAME_STATE {
@@ -26,13 +26,18 @@ enum class TILE_STATE {
   PLAYER2,
 };
 
+typedef struct coord_s {
+  int x;
+  int y;
+} coord_t;
+
 typedef struct gomoku_s {
   std::vector<std::vector<TILE_STATE>> map;
   int size;
-  int turn;
+  bool my_turn;
   int player;
-  int x;
-  int y;
+  coord_t me;
+  coord_t opponent;
   GAME_STATE win;
   int **win_pos;
 } gomoku_t;
