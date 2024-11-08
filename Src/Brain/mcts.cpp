@@ -5,6 +5,7 @@
 ** mcts
 */
 
+#include <iostream>
 #include "mcts.hpp"
 
 Node *MCTS::select(Node *node)
@@ -23,27 +24,53 @@ Node *MCTS::expand(Node *node)
     return node->expand();
 }
 
-double MCTS::simulate(Node *node)
+GAME_STATE MCTS::simulate(Node *node)
 {
     gomoku_t simulatedState = node->getGameState();
+    bool isCurrentPlayer = simulatedState.my_turn;
 
-    while (simulatedState.state == GAME_STATE::PLAY) {
-        std::vector<std::pair<int, int>> availableMoves = _gameLogic.getAvailableMoves(simulatedState);
-        std::pair<int, int> randomMove = availableMoves[rand() % availableMoves.size()];
+    if (simulatedState.state != GAME_STATE::PLAY) {
+        return simulatedState.state;
+    }
 
-        simulatedState.map[randomMove.first][randomMove.second] = 
-            (simulatedState.my_turn ? TILE_STATE::ME : TILE_STATE::PLAYER2);
-        simulatedState.my_turn = !simulatedState.my_turn;
+    std::vector<std::pair<int, int>> availableMoves = _gameLogic.getAvailableMoves(simulatedState);
 
-        if (_gameLogic.checkWin(simulatedState)) {
-            simulatedState.state = simulatedState.my_turn ? GAME_STATE::LOSE : GAME_STATE::WIN;
-        } else if (_gameLogic.checkDraw(simulatedState)) {
-            simulatedState.state = GAME_STATE::LOSE;
+    std::vector<std::pair<int, int>> adjacentMoves;
+    for (const auto &move : availableMoves) {
+        if (std::abs(move.first - node->getMove().first) <= 1 &&
+            std::abs(move.second - node->getMove().second) <= 1) {
+            adjacentMoves.push_back(move);
         }
     }
-    return simulatedState.state == GAME_STATE::WIN ? 1.0 : (simulatedState.state == GAME_STATE::LOSE ? 0.0 : 0.5);
 
+    if (!adjacentMoves.empty()) {
+        availableMoves = adjacentMoves;
+    }
+
+    while (simulatedState.state == GAME_STATE::PLAY) {
+        std::pair<int, int> move = availableMoves[rand() % availableMoves.size()];
+
+        simulatedState.map[move.first][move.second] = isCurrentPlayer ? TILE_STATE::ME : TILE_STATE::PLAYER2;
+        simulatedState.my_turn = !isCurrentPlayer;
+
+        if (isCurrentPlayer && _gameLogic.checkWin(simulatedState)) {
+            simulatedState.state = GAME_STATE::WIN;
+            break;
+        }
+
+        availableMoves = _gameLogic.getAvailableMoves(simulatedState);
+
+        if (_gameLogic.checkDraw(simulatedState)) {
+            simulatedState.state = GAME_STATE::LOSE;
+            break;
+        }
+
+        isCurrentPlayer = !isCurrentPlayer;
+    }
+
+    return simulatedState.state;
 }
+
 
 void MCTS::backPropagate(Node *node, double result)
 {
@@ -60,14 +87,28 @@ std::pair<int, int> MCTS::findBestMove(gomoku_t &game)
 
     auto start = std::chrono::steady_clock::now();
     auto timeLimit = std::chrono::duration<double>(_timeLimit);
+    if (timeLimit == std::chrono::duration<double>(0)) { ///////////////////// temp
+        timeLimit = std::chrono::duration<double>(1);
+    }
 
     while (std::chrono::steady_clock::now() - start < timeLimit) {
         Node *node = select(_root.get());
         if (!node->isTerminal()) {
             node = expand(node);
         }
-        double result = simulate(node);
-        backPropagate(node, result);
+        
+        GAME_STATE result = simulate(node);
+        if (result == GAME_STATE::WIN) {
+
+            std::cout << "WIN: " << static_cast<double>(result) << std::endl; ////////////////////////////////////
+        } else {
+            std::cout << "LOSE: " << static_cast<double>(result) << std::endl; ////////////////////////////////////
+        }
+
+        backPropagate(node, static_cast<double>(result));
     }
-    return _root->findBestChild(0)->getMove();
+
+    std::pair<int, int> bestMove = _root->findBestChild(0)->getMove();
+
+    return bestMove;
 }

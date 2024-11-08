@@ -25,6 +25,6 @@ class MCTS {
 
         Node *select(Node *node);
         Node *expand(Node *node);
-        double simulate(Node *node);
+        GAME_STATE simulate(Node *node);
         void backPropagate(Node *node, double result);
 };

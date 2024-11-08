@@ -40,7 +40,8 @@ Node *Node::expand()
     newGameState.map[move.first][move.second] = (_gameState.my_turn ? TILE_STATE::ME : TILE_STATE::PLAYER2);
     newGameState.my_turn = !newGameState.my_turn;
 
-    auto child = std::make_unique<Node>(newGameState, this, move);
+    coord_t moveCoord = {move.first, move.second};
+    auto child = std::make_unique<Node>(newGameState, this, moveCoord);
     _children.push_back(std::move(child));
 
     return _children.back().get();

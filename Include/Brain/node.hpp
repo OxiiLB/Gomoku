@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 #include "struct.hpp"
-#include "macro.hpp"
 
 class Node {
     public:

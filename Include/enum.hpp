@@ -15,8 +15,8 @@ enum class COMMAND_ERROR {
 };
 
 enum class GAME_STATE {
-  WIN,
   LOSE,
+  WIN,
   PLAY,
   WAIT,
 };

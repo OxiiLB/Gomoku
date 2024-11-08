@@ -7,6 +7,7 @@
 
 #include "system.hpp"
 #include "command.hpp"
+#include "brain.hpp"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
@@ -75,6 +76,7 @@ void System::gameLoop()
   bool isRunning = true;
   gomoku_t game;
   initiateStruct(&game);
+  Brain brain(game);
 
   while (isRunning) {
 
@@ -104,7 +106,9 @@ void System::gameLoop()
         displayGame(&game);
       if (game.my_turn) {
         game.my_turn = false;
-        std::cout << game.me.x << "," << game.me.y << std::endl;
+        std::pair<int, int> brainsMove = brain.getNextMove();
+        game.map[brainsMove.first][brainsMove.second] = TILE_STATE::ME;
+        displayGame(&game);
       }
     }
   }

@@ -30,10 +30,10 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     int i = 0;
     int j = 0;
 
-    // Horizontal
-    for (i = 0; i < gameState.size; ++i) {
-        for (j = 0; j < gameState.size - 4; ++j) {
-            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
+    // Horizontal check
+    for (int i = 0; i < gameState.size; ++i) {
+        for (int j = 0; j <= gameState.size - 5; ++j) {
+            if (gameState.map[i][j] == TILE_STATE::ME &&
                 gameState.map[i][j] == gameState.map[i][j + 1] &&
                 gameState.map[i][j] == gameState.map[i][j + 2] &&
                 gameState.map[i][j] == gameState.map[i][j + 3] &&
@@ -42,38 +42,41 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
             }
         }
     }
-    // Vertical
-    for (i = 0; i < gameState.size - 4; ++i) {
-        for (j = 0; j < gameState.size; ++j) {
-            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
-                gameState.map[i][j] == gameState.map[i + 1][j] &&
-                gameState.map[i][j] == gameState.map[i + 2][j] &&
-                gameState.map[i][j] == gameState.map[i + 3][j] &&
-                gameState.map[i][j] == gameState.map[i + 4][j]) {
+
+    // Vertical check
+    for (int i = 0; i <= gameState.size - 5; ++i) {
+        for (int j = 0; j < gameState.size; ++j) {
+            if (gameState.map[i][j] == TILE_STATE::ME &&
+                gameState.map[i + 1][j] == TILE_STATE::ME &&
+                gameState.map[i + 2][j] == TILE_STATE::ME &&
+                gameState.map[i + 3][j] == TILE_STATE::ME &&
+                gameState.map[i + 4][j] == TILE_STATE::ME) {
                 return true;
             }
         }
     }
-    // Diagonal
-    for (i = 0; i < gameState.size - 4; ++i) {
-        for (j = 0; j < gameState.size - 4; ++j) {
-            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
-                gameState.map[i][j] == gameState.map[i + 1][j + 1] &&
-                gameState.map[i][j] == gameState.map[i + 2][j + 2] &&
-                gameState.map[i][j] == gameState.map[i + 3][j + 3] &&
-                gameState.map[i][j] == gameState.map[i + 4][j + 4]) {
+
+    // Diagonal (bottom-left to top-right) check
+    for (int i = 0; i <= gameState.size - 5; ++i) {
+        for (int j = 0; j <= gameState.size - 5; ++j) {
+            if (gameState.map[i][j] == TILE_STATE::ME &&
+                gameState.map[i + 1][j + 1] == TILE_STATE::ME &&
+                gameState.map[i + 2][j + 2] == TILE_STATE::ME &&
+                gameState.map[i + 3][j + 3] == TILE_STATE::ME &&
+                gameState.map[i + 4][j + 4] == TILE_STATE::ME) {
                 return true;
             }
         }
     }
-    // Other diagonal
-    for (i = 0; i < gameState.size - 4; ++i) {
-        for (j = 4; j < gameState.size; ++j) {
-            if (gameState.map[i][j] != TILE_STATE::EMPTY &&
-                gameState.map[i][j] == gameState.map[i + 1][j - 1] &&
-                gameState.map[i][j] == gameState.map[i + 2][j - 2] &&
-                gameState.map[i][j] == gameState.map[i + 3][j - 3] &&
-                gameState.map[i][j] == gameState.map[i + 4][j - 4]) {
+
+    // Diagonal (top-left to bottom-right) check
+    for (int i = 0; i <= gameState.size - 5; ++i) {  // Start from i = 0, not i = 4
+        for (int j = 0; j <= gameState.size - 5; ++j) { // Check columns as well
+            if (gameState.map[i][j] == TILE_STATE::ME &&
+                gameState.map[i + 1][j + 1] == TILE_STATE::ME &&
+                gameState.map[i + 2][j + 2] == TILE_STATE::ME &&
+                gameState.map[i + 3][j + 3] == TILE_STATE::ME &&
+                gameState.map[i + 4][j + 4] == TILE_STATE::ME) {
                 return true;
             }
         }
