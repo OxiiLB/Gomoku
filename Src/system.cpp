@@ -56,6 +56,7 @@ void System::initiateStruct(gomoku_t *game)
   game->global_info.evaluate.x = 0;
   game->global_info.evaluate.y = 0;
   game->global_info.folder = 0;
+  game->god_mode.map = false;
 }
 
 std::vector<std::string> System::splitString(const std::string &str)
@@ -75,9 +76,33 @@ std::vector<std::string> System::splitString(const std::string &str)
   return result;
 }
 
-void System::gameLoop()
+void System::command(gomoku_t *game, std::vector<std::string> entry, bool *isRunning)
 {
   Command command;
+  if (entry.front() == "START")
+    command.start(game, entry);
+  else if (entry.front() == "TURN")
+    command.turn(game, entry);
+  else if (entry.front() == "INFO")
+    command.info(game, entry);
+  else if (entry.front() == "BEGIN")
+    command.begin(game);
+  else if (entry.front() == "BOARD")
+    command.board(this, game);
+  else if (entry.front() == "ABOUT")
+    command.about();
+  else if (entry.front() == "RECTSTART")
+    command.rectStart(game, entry);
+  else if (entry.front() == "RESTART")
+    command.reStart(game);
+  else if (entry.front() == "GODMOD")
+    command.godMode(game, entry);
+  else if (entry.front() == "END")
+    *isRunning = false;
+}
+
+void System::gameLoop()
+{
   bool isRunning = true;
   gomoku_t game;
   initiateStruct(&game);
@@ -88,28 +113,10 @@ void System::gameLoop()
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
 
-    if (entry.front() == "START") {
-      command.start(&game, entry);
-    } else if (entry.front() == "TURN") {
-      command.turn(&game, entry);
-    } else if (entry.front() == "INFO") {
-      command.info(&game, entry);
-    } else if (entry.front() == "BEGIN") {
-      command.begin(&game);
-    } else if (entry.front() == "BOARD") {
-      command.board(this, &game);
-    } else if (entry.front() == "ABOUT") {
-      command.about();
-    } else if (entry.front() == "END" || game.state == GAME_STATE::WIN ||
-               game.state == GAME_STATE::LOSE) {
-      isRunning = false;
-    } else if (entry.front() == "RECTSTART") {
-      command.rectStart(&game, entry);
-    } else if (entry.front() == "RESTART") {
-      command.reStart(&game);
-    }
+    command(&game, entry, &isRunning);
+
     if (game.state == GAME_STATE::PLAY && isRunning) {
-      if (game.global_info.game_type == GAME_TYPE::HUMAN)
+      if (game.god_mode.map)
         displayGame(&game);
       if (game.my_turn) {
         game.my_turn = false;

@@ -186,6 +186,15 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
   }
 }
 
+void Command::godMode(gomoku_t *game, std::vector<std::string> entry)
+{
+  if (entry.size() < 2) {
+    return;
+  }
+  if (entry.at(1) == "map")
+    game->god_mode.map = !game->god_mode.map;
+}
+
 void Command::error(COMMAND_ERROR command)
 {
   switch (command) {
