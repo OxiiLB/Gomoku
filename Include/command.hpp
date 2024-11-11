@@ -9,19 +9,20 @@
 
 #include "i_command.hpp"
 #include <iostream>
+#include <memory>
 
 class Command : virtual public ICommand {
 public:
   Command();
   ~Command();
-  void start(gomoku_t *game, std::vector<std::string> entry) override;
-  void rectStart(gomoku_t *game, std::vector<std::string> entry) override;
-  void reStart(gomoku_t *game) override;
-  void turn(gomoku_t *game, std::vector<std::string> entry) override;
-  void info(gomoku_t *game, std::vector<std::string> entry) override;
-  void begin(gomoku_t *game) override;
-  void board(ISystem *system, gomoku_t *game) override;
+  void start(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry) override;
+  void rectStart(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry) override;
+  void reStart(std::shared_ptr<gomoku_t> game) override;
+  void turn(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry) override;
+  void info(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry) override;
+  void begin(std::shared_ptr<gomoku_t> game) override;
+  void board(ISystem *system, std::shared_ptr<gomoku_t> game) override;
   void about() override;
   void error(COMMAND_ERROR command) override;
-  void godMode(gomoku_t *game, std::vector<std::string> entry) override;
+  void godMode(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry) override;
 };

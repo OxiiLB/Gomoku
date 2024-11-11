@@ -11,20 +11,25 @@
 #include "struct.hpp"
 #include <thread>
 #include <atomic>
+#include <memory>
 
-class System : virtual public ISystem {
+class System : virtual public ISystem
+{
 public:
   System();
   ~System();
   void gameLoop() override;
   gomoku_t *getGame() override;
-  void initiateStruct(gomoku_t *game) override;
+  void initiateStruct(std::shared_ptr<gomoku_t> game) override;
   std::vector<std::string> splitString(const std::string &str) override;
-  void displayGame(gomoku_t *game) override;
-  void command(gomoku_t *game,
+  void displayGame(std::shared_ptr<gomoku_t> game) override;
+  void command(std::shared_ptr<gomoku_t> game,
                std::vector<std::string> entry,
                bool *isRunning) override;
 
 protected:
-  gomoku_t *game;
+  defenseAlgorithm defense;
+  std::thread bgThread;
+
+  std::shared_ptr<gomoku_t> game;
 };

@@ -10,24 +10,20 @@
 #include "struct.hpp"
 #include <iostream>
 #include <mutex>
+#include <memory>
 
 class defenseAlgorithm
 {
 public:
-    defenseAlgorithm(gomoku_t *game);
+    defenseAlgorithm();
     ~defenseAlgorithm();
 
-    void updateGame(gomoku_t *game);
+    bool checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent);
 
-    bool checkDefenseMove(int x, int y, TILE_STATE player, TILE_STATE opponent);
-
-    void executeDefense();
+    void executeDefense(std::shared_ptr<gomoku_t> game);
 
 private:
-    gomoku_t *game;
-    std::mutex _mutex;
+    bool canBlockMove(gomoku_t *game, int x, int y);
 
-    bool canBlockMove(int x, int y);
-
-    bool checkDirection(int x, int y, int dx, int dy);
+    bool checkDirection(gomoku_t *game, int x, int y, int dx, int dy);
 };

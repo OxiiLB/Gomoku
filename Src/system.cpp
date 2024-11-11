@@ -38,7 +38,7 @@ System::System() {}
 
 System::~System() {}
 
-void System::initiateStruct(gomoku_t *game)
+void System::initiateStruct(std::shared_ptr<gomoku_t> game)
 {
   game->state = GAME_STATE::PLAY, game->map.resize(0);
   game->size.x = 0;
@@ -66,11 +66,14 @@ std::vector<std::string> System::splitString(const std::string &str)
   std::istringstream iss(str);
   std::vector<std::string> result;
   std::string word;
-  while (std::getline(iss, word, ' ')) {
+  while (std::getline(iss, word, ' '))
+  {
     std::istringstream subiss(word);
     std::string subword;
-    while (std::getline(subiss, subword, ',')) {
-      if (!subword.empty()) {
+    while (std::getline(subiss, subword, ','))
+    {
+      if (!subword.empty())
+      {
         result.push_back(subword);
       }
     }
@@ -78,24 +81,24 @@ std::vector<std::string> System::splitString(const std::string &str)
   return result;
 }
 
-void System::command(gomoku_t *game, std::vector<std::string> entry, bool *isRunning)
+void System::command(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry, bool *isRunning)
 {
   Command command;
   if (entry.front() == "START")
     command.start(game, entry);
-  else if (entry.front() == "TURN")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "TURN")
     command.turn(game, entry);
   else if (entry.front() == "INFO")
     command.info(game, entry);
-  else if (entry.front() == "BEGIN")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "BEGIN")
     command.begin(game);
-  else if (entry.front() == "BOARD")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "BOARD")
     command.board(this, game);
   else if (entry.front() == "ABOUT")
     command.about();
   else if (entry.front() == "RECTSTART")
     command.rectStart(game, entry);
-  else if (entry.front() == "RESTART")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "RESTART")
     command.reStart(game);
   else if (entry.front() == "GODMOD")
     command.godMode(game, entry);
@@ -106,38 +109,51 @@ void System::command(gomoku_t *game, std::vector<std::string> entry, bool *isRun
 void System::gameLoop()
 {
   bool isRunning = true;
-  gomoku_t game;
-  initiateStruct(&game);
+  this->game = std::make_shared<gomoku_t>();
+  initiateStruct(game);
 
-  this->defense = std::make_unique<defenseAlgorithm>(&game);
+  this->defense = defenseAlgorithm();
 
-  this->startBakcgroundThread();
-
-      while (isRunning)
+  while (isRunning)
   {
+    
+
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
 
-    command(&game, entry, &isRunning);
+    command(game, entry, &isRunning);
 
-    if (game.state == GAME_STATE::PLAY && isRunning) {
+    if (game.get()->state == GAME_STATE::PLAY && isRunning) {
+      if (game.get()->my_turn) {
+        bool playing = true;
+        game.get()->my_turn = false;
+        for (int y = 0; playing != false && y < game.get()->size.y; y++) {
+          for (int x = 0; playing != false && x < game.get()->size.x; x++) {
+            if (game.get()->map[y][x] == TILE_STATE::EMPTY) {
+              game.get()->map[y][x] = TILE_STATE::ME;
+              game.get()->me.x = x;
+              game.get()->me.y = y;
+              std::cout << x << "," << y << std::endl;
+              playing = false;
+            }
+          }
+        }
+      }
       if (game.god_mode.map)
         displayGame(&game);
-      if (game.my_turn)
-      {
-        game.my_turn = false;
-        std::cout << game.me.x << "," << game.me.y << std::endl;
-      }
     }
+    if (bgThread.joinable())
+    {
+      bgThread.join();
+      std::cout << "Defense done" << std::endl;
+   }
   }
-  if (bgThread.joinable())
-    bgThread.join();
 }
 
-gomoku_t *System::getGame() { return game; }
+gomoku_t *System::getGame() { return game.get(); }
 
-void System::displayGame(gomoku_t *game)
+void System::displayGame(std::shared_ptr<gomoku_t> game)
 {
   int space = 1;
   for (int i = game->size.y; i > 9; i /= 10)
@@ -154,11 +170,13 @@ void System::displayGame(gomoku_t *game)
   };
 
   std::cout << std::endl;
-  for (int i = 0; i < game->size.y; i++) {
+  for (int i = 0; i < game->size.y; i++)
+  {
     std::cout << i;
     placeSpaceHeight(space, i);
     std::cout << "| ";
-    for (int j = 0; j < game->size.x; j++) {
+    for (int j = 0; j < game->size.x; j++)
+    {
       std::cout << game->map[i][j] << " ";
     }
     std::cout << std::endl;

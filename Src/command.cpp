@@ -11,7 +11,7 @@ Command::Command() {}
 
 Command::~Command() {}
 
-void Command::start(gomoku_t *game, std::vector<std::string> entry)
+void Command::start(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry)
 {
   if (entry.size() < 2)
   {
@@ -30,7 +30,7 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
   std::cout << "OK - everything is good" << std::endl;
 }
 
-void Command::rectStart(gomoku_t *game, std::vector<std::string> entry)
+void Command::rectStart(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry)
 {
   if (entry.size() < 3) {
     error(COMMAND_ERROR::START);
@@ -48,7 +48,7 @@ void Command::rectStart(gomoku_t *game, std::vector<std::string> entry)
   std::cout << "OK - parameters are good" << std::endl;
 }
 
-void Command::reStart(gomoku_t *game)
+void Command::reStart(std::shared_ptr<gomoku_t> game)
 {
   game->map.clear();
   game->map.resize(game->size.y,
@@ -56,7 +56,7 @@ void Command::reStart(gomoku_t *game)
   std::cout << "OK" << std::endl;
 }
 
-void Command::turn(gomoku_t *game, std::vector<std::string> entry)
+void Command::turn(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry)
 {
   if (entry.size() < 3)
   {
@@ -67,23 +67,20 @@ void Command::turn(gomoku_t *game, std::vector<std::string> entry)
   game->opponent.y = atoi(entry.at(2).c_str());
   if (game->opponent.x < 0 || game->opponent.y < 0 ||
       game->opponent.x >= game->size.x || game->opponent.y >= game->size.y ||
-      game->map[game->opponent.x][game->opponent.y] != TILE_STATE::EMPTY) {
+      game->map[game->opponent.y][game->opponent.x] != TILE_STATE::EMPTY) {
     error(COMMAND_ERROR::TURN);
     return;
   }
-  game->map[game->opponent.x][game->opponent.y] = TILE_STATE::PLAYER2;
+  game->map[game->opponent.y][game->opponent.x] = TILE_STATE::PLAYER2;
   game->my_turn = true;
-  std::cout << game->opponent.x << "," << game->opponent.y << std::endl;
 }
 
-void Command::begin(gomoku_t *game)
+void Command::begin(std::shared_ptr<gomoku_t> game)
 {
-  std::cout << "BEGIN" << std::endl;
-  std::cout << "1, 1" << std::endl;
-  game->my_turn = false;
+  game->my_turn = true;
 }
 
-void Command::board(ISystem *system, gomoku_t *game)
+void Command::board(ISystem *system, std::shared_ptr<gomoku_t> game)
 {
   bool isRunning = true;
   while (isRunning)
@@ -103,24 +100,23 @@ void Command::board(ISystem *system, gomoku_t *game)
       int y = atoi(entry.at(1).c_str());
       int player = atoi(entry.at(2).c_str());
       if (x < 0 || y < 0 || x >= game->size.x || y >= game->size.y ||
-          game->map[x][y] != TILE_STATE::EMPTY) {
+          game->map[y][x] != TILE_STATE::EMPTY) {
         error(COMMAND_ERROR::BOARD);
         return;
       }
-      if (player == 1)
-      {
-        game->map[x][y] = TILE_STATE::ME;
+      if (player == 1) {
+        game->map[y][x] = TILE_STATE::ME;
         game->me.x = x;
         game->me.y = y;
-      }
-      else
-      {
-        game->map[x][y] = TILE_STATE::PLAYER2;
+      } else {
+        game->map[y][x] = TILE_STATE::PLAYER2;
         game->opponent.x = x;
         game->opponent.y = y;
       }
     }
   }
+  game->my_turn = true;
+  game->state = GAME_STATE::PLAY;
 }
 
 void Command::about()
@@ -130,7 +126,7 @@ void Command::about()
             << std::endl;
 }
 
-void Command::info(gomoku_t *game, std::vector<std::string> entry)
+void Command::info(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry)
 {
   if (entry.size() < 3)
   {
@@ -210,7 +206,7 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
   }
 }
 
-void Command::godMode(gomoku_t *game, std::vector<std::string> entry)
+void Command::godMode(std::shared_ptr<gomoku_t> game, std::vector<std::string> entry)
 {
   if (entry.size() < 2) {
     return;

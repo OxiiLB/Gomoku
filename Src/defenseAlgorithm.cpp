@@ -7,7 +7,7 @@
 
 #include "defenseAlgorithm.hpp"
 
-defenseAlgorithm::defenseAlgorithm(gomoku_t *game) : game(game)
+defenseAlgorithm::defenseAlgorithm()
 {
 }
 
@@ -15,15 +15,15 @@ defenseAlgorithm::~defenseAlgorithm()
 {
 }
 
-bool defenseAlgorithm::canBlockMove(int x, int y)
+bool defenseAlgorithm::canBlockMove(gomoku_t *game, int x, int y)
 {
-    return checkDirection(x, y, 0, 1) ||
-           checkDirection(x, y, 1, 0) ||
-           checkDirection(x, y, 1, 1) ||
-           checkDirection(x, y, 1, -1);
+    return checkDirection(game, x, y, 0, 1) ||
+           checkDirection(game, x, y, 1, 0) ||
+           checkDirection(game, x, y, 1, 1) ||
+           checkDirection(game, x, y, 1, -1);
 }
 
-bool defenseAlgorithm::checkDirection(int x, int y, int dx, int dy)
+bool defenseAlgorithm::checkDirection(gomoku_t *game, int x, int y, int dx, int dy)
 {
     int count = 0;
 
@@ -31,7 +31,7 @@ bool defenseAlgorithm::checkDirection(int x, int y, int dx, int dy)
     {
         int nx = x + i * dx;
         int ny = y + i * dy;
-        if (nx >= 0 && nx < game->size && ny >= 0 && ny < game->size)
+        if (nx >= 0 && nx < game->size.x && ny >= 0 && ny < game->size.y)
         {
             if (game->map[nx][ny] == TILE_STATE::PLAYER2)
                 count++;
@@ -44,37 +44,24 @@ bool defenseAlgorithm::checkDirection(int x, int y, int dx, int dy)
     return false;
 }
 
-void defenseAlgorithm::updateGame(gomoku_t *game)
-{
-    std::lock_guard<std::mutex> lock(_mutex);
-    this->game = game;
-}
-
-bool defenseAlgorithm::checkDefenseMove(int x, int y, TILE_STATE player, TILE_STATE opponent)
+bool defenseAlgorithm::checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent)
 {
     if (game->map[x][y] == TILE_STATE::EMPTY)
     {
-        if (canBlockMove(x, y))
+        if (canBlockMove(game, x, y))
             return true;
     }
     return false;
 }
 
-void defenseAlgorithm::executeDefense()
+void defenseAlgorithm::executeDefense(std::shared_ptr<gomoku_t> game)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-
-    for (int x = 0; x < game->size; x++)
+    if (game)
     {
-        for (int y = 0; y < game->size; y++)
-        {
-            if (game->map[x][y] == TILE_STATE::EMPTY && canBlockMove(x, y))
-            {
-                std::lock_guard<std::mutex> lock(_mutex);
-                game->me.x = x;
-                game->me.y = y;
-                return;
-            }
-        }
+        std::cout << "Defense active" << std::endl;
+    }
+    else
+    {
+        std::cerr << "Erreur : l'objet 'game' n'est pas valide." << std::endl;
     }
 }
