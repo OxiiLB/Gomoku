@@ -117,8 +117,8 @@ void System::gameLoop()
 
   while (isRunning)
   {
-    std::thread bgThread([&]()
-                         { _defense.executeDefense(&_game); });
+    // std::thread bgThread([&]()
+    //                      { _defense.executeDefense(&_game); });
 
     std::string line;
     std::getline(std::cin, line);
@@ -147,13 +147,13 @@ void System::gameLoop()
           }
         }
       }
-      if (bgThread.joinable())
-        bgThread.join();
+      // if (bgThread.joinable())
+      //   bgThread.join();
       if (_game.god_mode.map)
         displayGame(&_game);
     }
-    if (bgThread.joinable())
-      bgThread.join();
+    // if (bgThread.joinable())
+    //   bgThread.join();
   }
 }
 
