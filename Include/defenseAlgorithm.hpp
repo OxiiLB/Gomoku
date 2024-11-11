@@ -20,7 +20,7 @@ public:
 
     bool checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent);
 
-    void executeDefense(std::shared_ptr<gomoku_t> game);
+    void executeDefense(gomoku_t *game);
 
 private:
     bool canBlockMove(gomoku_t *game, int x, int y);

@@ -54,7 +54,7 @@ bool defenseAlgorithm::checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE
     return false;
 }
 
-void defenseAlgorithm::executeDefense(std::shared_ptr<gomoku_t> game)
+void defenseAlgorithm::executeDefense(gomoku_t *game)
 {
     if (game)
     {

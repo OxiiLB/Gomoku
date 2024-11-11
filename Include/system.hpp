@@ -20,16 +20,15 @@ public:
   ~System();
   void gameLoop() override;
   gomoku_t *getGame() override;
-  void initiateStruct(std::shared_ptr<gomoku_t> game) override;
+  void initiateStruct(gomoku_t *_game) override;
   std::vector<std::string> splitString(const std::string &str) override;
-  void displayGame(std::shared_ptr<gomoku_t> game) override;
-  void command(std::shared_ptr<gomoku_t> game,
+  void displayGame(gomoku_t *_game) override;
+  void command(gomoku_t *_game,
                std::vector<std::string> entry,
                bool *isRunning) override;
 
 protected:
-  defenseAlgorithm defense;
-  std::thread bgThread;
-
-  std::shared_ptr<gomoku_t> game;
+  gomoku_t _game;
+  std::thread _bgThread;
+  defenseAlgorithm _defense;
 };
