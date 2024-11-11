@@ -12,24 +12,19 @@
 #include <thread>
 #include <atomic>
 
-class System : virtual public ISystem
-{
+class System : virtual public ISystem {
 public:
-    System();
-    ~System();
-    void gameLoop() override;
-    gomoku_t *getGame() override;
-    void initiateStruct(gomoku_t *game) override;
-    std::vector<std::string> splitString(const std::string &str) override;
-    void displayGame(gomoku_t *game) override;
+  System();
+  ~System();
+  void gameLoop() override;
+  gomoku_t *getGame() override;
+  void initiateStruct(gomoku_t *game) override;
+  std::vector<std::string> splitString(const std::string &str) override;
+  void displayGame(gomoku_t *game) override;
+  void command(gomoku_t *game,
+               std::vector<std::string> entry,
+               bool *isRunning) override;
 
 protected:
-    gomoku_t *game;
-
-    std::unique_ptr<defenseAlgorithm> defense;
-    std::thread bgThread;
-    std::atomic<bool> isRunning;
-    std::mutex gameMutex;
-
-    void startBakcgroundThread();
+  gomoku_t *game;
 };

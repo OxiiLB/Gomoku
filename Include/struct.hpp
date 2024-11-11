@@ -69,12 +69,17 @@ typedef struct global_info_s {
   int folder;
 } global_info_t;
 
+typedef struct god_mode_s {
+  bool map;
+} god_mode_t;
+
 typedef struct gomoku_s {
   std::vector<std::vector<TILE_STATE>> map;
-  int size;
   bool my_turn;
   GAME_STATE state;
+  coord_t size;
   coord_t me;
   coord_t opponent;
   global_info_t global_info;
+  god_mode_t god_mode;
 } gomoku_t;
