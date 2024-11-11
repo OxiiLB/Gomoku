@@ -117,9 +117,6 @@ void System::gameLoop()
 
   while (isRunning)
   {
-    std::thread bgThread([&]()
-                         { _defense.executeDefense(&_game); });
-
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
@@ -130,30 +127,38 @@ void System::gameLoop()
     {
       if (_game.my_turn)
       {
+        std::thread bgThread([&]()
+                             { _defense.executeDefense(&_game); });
         bool playing = true;
         _game.my_turn = false;
-        for (int y = 0; playing != false && y < _game.size.y; y++)
+
+        // for (int y = 0; playing != false && y < _game.size.y; y++)
+        // {
+        //   for (int x = 0; playing != false && x < _game.size.x; x++)
+        //   {
+        //     if (_game.map[y][x] == TILE_STATE::EMPTY)
+        //     {
+        //       _game.map[y][x] = TILE_STATE::ME;
+        //       _game.me.x = x;
+        //       _game.me.y = y;
+        //       std::cout << x << "," << y << std::endl;
+        //       playing = false;
+        //     }
+        //   }
+        // }
+        if (bgThread.joinable())
+          bgThread.join();
+        if (_game.defense.best_move.x && _game.defense.best_move.y)
         {
-          for (int x = 0; playing != false && x < _game.size.x; x++)
-          {
-            if (_game.map[y][x] == TILE_STATE::EMPTY)
-            {
-              _game.map[y][x] = TILE_STATE::ME;
-              _game.me.x = x;
-              _game.me.y = y;
-              std::cout << x << "," << y << std::endl;
-              playing = false;
-            }
-          }
+          _game.map[_game.defense.best_move.y][_game.defense.best_move.x] = TILE_STATE::ME;
+          _game.me.x = _game.defense.best_move.x;
+          _game.me.y = _game.defense.best_move.y;
+          std::cout << _game.defense.best_move.x << "," << _game.defense.best_move.y << std::endl;
         }
       }
-      if (bgThread.joinable())
-        bgThread.join();
       if (_game.god_mode.map)
         displayGame(&_game);
     }
-    if (bgThread.joinable())
-      bgThread.join();
   }
 }
 

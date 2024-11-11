@@ -29,6 +29,5 @@ public:
 
 protected:
   gomoku_t _game;
-  std::thread _bgThread;
   defenseAlgorithm _defense;
 };
