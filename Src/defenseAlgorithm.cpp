@@ -56,12 +56,17 @@ bool defenseAlgorithm::checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE
 
 void defenseAlgorithm::executeDefense(gomoku_t *game)
 {
-    if (game)
+    for (int x = 0; x < game->size.x; x++)
     {
-        std::cout << "Defense active" << std::endl;
-    }
-    else
-    {
-        std::cerr << "Erreur : l'objet 'game' n'est pas valide." << std::endl;
+        for (int y = 0; y < game->size.y; y++)
+        {
+            if (checkDefenseMove(game, x, y, TILE_STATE::ME, TILE_STATE::PLAYER2))
+            {
+                std::cout << "Defense move: " << x << " " << y << std::endl;
+                game->defense.best_move.x = x;
+                game->defense.best_move.y = y;
+                return;
+            }
+        }
     }
 }

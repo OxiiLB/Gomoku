@@ -117,9 +117,8 @@ void System::gameLoop()
 
   while (isRunning)
   {
-    std::thread bgThread([&]() {
-      _defense.executeDefense(&_game);
-    });
+    std::thread bgThread([&]()
+                         { _defense.executeDefense(&_game); });
 
     std::string line;
     std::getline(std::cin, line);
@@ -127,13 +126,18 @@ void System::gameLoop()
 
     command(&_game, entry, &isRunning);
 
-    if (_game.state == GAME_STATE::PLAY && isRunning) {
-      if (_game.my_turn) {
+    if (_game.state == GAME_STATE::PLAY && isRunning)
+    {
+      if (_game.my_turn)
+      {
         bool playing = true;
         _game.my_turn = false;
-        for (int y = 0; playing != false && y < _game.size.y; y++) {
-          for (int x = 0; playing != false && x < _game.size.x; x++) {
-            if (_game.map[y][x] == TILE_STATE::EMPTY) {
+        for (int y = 0; playing != false && y < _game.size.y; y++)
+        {
+          for (int x = 0; playing != false && x < _game.size.x; x++)
+          {
+            if (_game.map[y][x] == TILE_STATE::EMPTY)
+            {
               _game.map[y][x] = TILE_STATE::ME;
               _game.me.x = x;
               _game.me.y = y;
@@ -143,14 +147,13 @@ void System::gameLoop()
           }
         }
       }
+      if (bgThread.joinable())
+        bgThread.join();
       if (_game.god_mode.map)
         displayGame(&_game);
     }
     if (bgThread.joinable())
-    {
       bgThread.join();
-      std::cout << "Defense done" << std::endl;
-   }
   }
 }
 
@@ -173,11 +176,13 @@ void System::displayGame(gomoku_t *_game)
   };
 
   std::cout << std::endl;
-  for (int i = 0; i < _game->size.y; i++) {
+  for (int i = 0; i < _game->size.y; i++)
+  {
     std::cout << i;
     placeSpaceHeight(space, i);
     std::cout << "| ";
-    for (int j = 0; j < _game->size.x; j++) {
+    for (int j = 0; j < _game->size.x; j++)
+    {
       std::cout << _game->map[i][j] << " ";
     }
     std::cout << std::endl;

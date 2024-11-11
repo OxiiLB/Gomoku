@@ -73,6 +73,11 @@ typedef struct god_mode_s {
   bool map;
 } god_mode_t;
 
+typedef struct defenseAlgorithm_s {
+  coord_t best_move;
+  int risk_level;
+} defenseAlgorithm_t;
+
 typedef struct gomoku_s {
   std::vector<std::vector<TILE_STATE>> map;
   bool my_turn;
@@ -82,4 +87,5 @@ typedef struct gomoku_s {
   coord_t opponent;
   global_info_t global_info;
   god_mode_t god_mode;
+  defenseAlgorithm_t defense;
 } gomoku_t;
