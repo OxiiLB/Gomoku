@@ -15,13 +15,13 @@ public:
   ~System();
   void gameLoop() override;
   gomoku_t *getGame() override;
-  void initiateStruct(gomoku_t *game) override;
+  void initiateStruct(gomoku_t *_game) override;
   std::vector<std::string> splitString(const std::string &str) override;
-  void displayGame(gomoku_t *game) override;
-  void command(gomoku_t *game,
+  void displayGame(gomoku_t *_game) override;
+  void command(gomoku_t *_game,
                std::vector<std::string> entry,
                bool *isRunning) override;
 
 protected:
-  gomoku_t *game;
+  gomoku_t _game;
 };
