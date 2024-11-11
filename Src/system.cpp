@@ -76,24 +76,26 @@ std::vector<std::string> System::splitString(const std::string &str)
   return result;
 }
 
-void System::command(gomoku_t *game, std::vector<std::string> entry, bool *isRunning)
+void System::command(gomoku_t *game,
+                     std::vector<std::string> entry,
+                     bool *isRunning)
 {
   Command command;
   if (entry.front() == "START")
     command.start(game, entry);
-  else if (entry.front() == "TURN")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "TURN")
     command.turn(game, entry);
   else if (entry.front() == "INFO")
     command.info(game, entry);
-  else if (entry.front() == "BEGIN")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "BEGIN")
     command.begin(game);
-  else if (entry.front() == "BOARD")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "BOARD")
     command.board(this, game);
   else if (entry.front() == "ABOUT")
     command.about();
   else if (entry.front() == "RECTSTART")
     command.rectStart(game, entry);
-  else if (entry.front() == "RESTART")
+  else if (game->state == GAME_STATE::PLAY && entry.front() == "RESTART")
     command.reStart(game);
   else if (entry.front() == "GODMOD")
     command.godMode(game, entry);
@@ -116,12 +118,23 @@ void System::gameLoop()
     command(&game, entry, &isRunning);
 
     if (game.state == GAME_STATE::PLAY && isRunning) {
+      if (game.my_turn) {
+        bool playing = true;
+        game.my_turn = false;
+        for (int y = 0; playing != false && y < game.size.y; y++) {
+          for (int x = 0; playing != false && x < game.size.x; x++) {
+            if (game.map[y][x] == TILE_STATE::EMPTY) {
+              game.map[y][x] = TILE_STATE::ME;
+              game.me.x = x;
+              game.me.y = y;
+              std::cout << x << "," << y << std::endl;
+              playing = false;
+            }
+          }
+        }
+      }
       if (game.god_mode.map)
         displayGame(&game);
-      if (game.my_turn) {
-        game.my_turn = false;
-        std::cout << game.me.x << "," << game.me.y << std::endl;
-      }
     }
   }
 }

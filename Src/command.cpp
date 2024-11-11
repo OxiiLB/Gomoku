@@ -65,20 +65,17 @@ void Command::turn(gomoku_t *game, std::vector<std::string> entry)
   game->opponent.y = atoi(entry.at(2).c_str());
   if (game->opponent.x < 0 || game->opponent.y < 0 ||
       game->opponent.x >= game->size.x || game->opponent.y >= game->size.y ||
-      game->map[game->opponent.x][game->opponent.y] != TILE_STATE::EMPTY) {
+      game->map[game->opponent.y][game->opponent.x] != TILE_STATE::EMPTY) {
     error(COMMAND_ERROR::TURN);
     return;
   }
-  game->map[game->opponent.x][game->opponent.y] = TILE_STATE::PLAYER2;
+  game->map[game->opponent.y][game->opponent.x] = TILE_STATE::PLAYER2;
   game->my_turn = true;
-  std::cout << game->opponent.x << "," << game->opponent.y << std::endl;
 }
 
 void Command::begin(gomoku_t *game)
 {
-  std::cout << "BEGIN" << std::endl;
-  std::cout << "1, 1" << std::endl;
-  game->my_turn = false;
+  game->my_turn = true;
 }
 
 void Command::board(ISystem *system, gomoku_t *game)
@@ -100,21 +97,23 @@ void Command::board(ISystem *system, gomoku_t *game)
       int y = atoi(entry.at(1).c_str());
       int player = atoi(entry.at(2).c_str());
       if (x < 0 || y < 0 || x >= game->size.x || y >= game->size.y ||
-          game->map[x][y] != TILE_STATE::EMPTY) {
+          game->map[y][x] != TILE_STATE::EMPTY) {
         error(COMMAND_ERROR::BOARD);
         return;
       }
       if (player == 1) {
-        game->map[x][y] = TILE_STATE::ME;
+        game->map[y][x] = TILE_STATE::ME;
         game->me.x = x;
         game->me.y = y;
       } else {
-        game->map[x][y] = TILE_STATE::PLAYER2;
+        game->map[y][x] = TILE_STATE::PLAYER2;
         game->opponent.x = x;
         game->opponent.y = y;
       }
     }
   }
+  game->my_turn = true;
+  game->state = GAME_STATE::PLAY;
 }
 
 void Command::about()
