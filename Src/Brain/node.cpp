@@ -47,19 +47,18 @@ Node *Node::expand()
     return _children.back().get();
 }
 
-// Returns the child node with the best UCB1 value.
-Node *Node::findBestChild(double explorationParam) const
-{
+Node *Node::findBestChild() {
     Node *bestChild = nullptr;
-    double bestValue = -std::numeric_limits<double>::infinity();
+    int bestDepth = 0;
 
-    for (const auto &child : _children) {
-        double value = (child->_value / child->_visits) +
-            explorationParam * std::sqrt(std::log(_visits) / child->_visits);
-        if (value > bestValue) {
-            bestValue = value;
+    for (auto &child : _children) {
+        int childDepth = child->getMinWinningDepth();
+
+        if (childDepth < bestDepth) {
+            bestDepth = childDepth;
             bestChild = child.get();
         }
     }
     return bestChild;
 }
+

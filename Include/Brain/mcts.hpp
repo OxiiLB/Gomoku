@@ -15,8 +15,9 @@
 class MCTS {
     public:
         MCTS(const gomoku_t &game) : _root(nullptr), _timeLimit(game.global_info.timeout_turn.count() / 1000.0), _gameLogic() {}
+        ~MCTS() {} // ?
 
-        std::pair<int, int> findBestMove(gomoku_t &game);
+        Node *getBestChildInfo(gomoku_t &game);
 
     private:
         double _timeLimit;
@@ -25,6 +26,6 @@ class MCTS {
 
         Node *select(Node *node);
         Node *expand(Node *node);
-        GAME_STATE simulate(Node *node);
-        void backPropagate(Node *node, double result);
+        int simulate(Node *node);
+        void backPropagate(Node *node, int depth);
 };

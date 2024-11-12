@@ -80,7 +80,7 @@ typedef struct defenseAlgorithm_s {
 
 typedef struct attackAlgorithm_s {
   coord_t best_move;
-  int risk_level;
+  int win_level;
 } attackAlgorithm_t;
 
 typedef struct gomoku_s {
