@@ -7,17 +7,16 @@
 
 #include "system.hpp"
 #include "command.hpp"
-#include <thread>
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 std::ostream &operator<<(std::ostream &os, const TILE_STATE &entry)
 {
-  switch (entry)
-  {
+  switch (entry) {
   case TILE_STATE::EMPTY:
     os << "X";
     break;
@@ -66,14 +65,11 @@ std::vector<std::string> System::splitString(const std::string &str)
   std::istringstream iss(str);
   std::vector<std::string> result;
   std::string word;
-  while (std::getline(iss, word, ' '))
-  {
+  while (std::getline(iss, word, ' ')) {
     std::istringstream subiss(word);
     std::string subword;
-    while (std::getline(subiss, subword, ','))
-    {
-      if (!subword.empty())
-      {
+    while (std::getline(subiss, subword, ',')) {
+      if (!subword.empty()) {
         result.push_back(subword);
       }
     }
@@ -115,46 +111,27 @@ void System::gameLoop()
 
   _defense = defenseAlgorithm();
 
-  while (isRunning)
-  {
+  while (isRunning) {
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = splitString(line);
 
     command(&_game, entry, &isRunning);
 
-    if (_game.state == GAME_STATE::PLAY && isRunning)
-    {
-      if (_game.my_turn)
-      {
-        std::thread bgThread([&]()
-                             { _defense.executeDefense(&_game); });
+    if (_game.state == GAME_STATE::PLAY && isRunning) {
+      if (_game.my_turn) {
+        std::thread bgThread([&]() { _defense.executeDefense(&_game); });
         bool playing = true;
         _game.my_turn = false;
 
-        // for (int y = 0; playing != false && y < _game.size.y; y++)
-        // {
-        //   for (int x = 0; playing != false && x < _game.size.x; x++)
-        //   {
-        //     if (_game.map[y][x] == TILE_STATE::EMPTY)
-        //     {
-        //       _game.map[y][x] = TILE_STATE::ME;
-        //       _game.me.x = x;
-        //       _game.me.y = y;
-        //       std::cout << x << "," << y << std::endl;
-        //       playing = false;
-        //     }
-        //   }
-        // }
         if (bgThread.joinable())
           bgThread.join();
-        if (_game.defense.best_move.x && _game.defense.best_move.y)
-        {
-          _game.map[_game.defense.best_move.y][_game.defense.best_move.x] = TILE_STATE::ME;
-          _game.me.x = _game.defense.best_move.x;
-          _game.me.y = _game.defense.best_move.y;
-          std::cout << _game.defense.best_move.x << "," << _game.defense.best_move.y << std::endl;
-        }
+        _game.map[_game.defense.best_move.y][_game.defense.best_move.x] =
+            TILE_STATE::ME;
+        _game.me.x = _game.defense.best_move.x;
+        _game.me.y = _game.defense.best_move.y;
+        std::cout << _game.defense.best_move.x << ","
+                  << _game.defense.best_move.y << std::endl;
       }
       if (_game.god_mode.map)
         displayGame(&_game);
@@ -170,8 +147,7 @@ void System::displayGame(gomoku_t *_game)
   for (int i = _game->size.y; i > 9; i /= 10)
     space++;
 
-  auto placeSpaceHeight = [](int x, int nbr)
-  {
+  auto placeSpaceHeight = [](int x, int nbr) {
     int remove_space = 0;
     for (int i = nbr; i > 9; i /= 10)
       remove_space++;
@@ -181,13 +157,11 @@ void System::displayGame(gomoku_t *_game)
   };
 
   std::cout << std::endl;
-  for (int i = 0; i < _game->size.y; i++)
-  {
+  for (int i = 0; i < _game->size.y; i++) {
     std::cout << i;
     placeSpaceHeight(space, i);
     std::cout << "| ";
-    for (int j = 0; j < _game->size.x; j++)
-    {
+    for (int j = 0; j < _game->size.x; j++) {
       std::cout << _game->map[i][j] << " ";
     }
     std::cout << std::endl;
