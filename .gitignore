@@ -15,7 +15,7 @@ board.log
 config.ini
 
 # Executable ignored
-pbrain-gomoku-ai
+pbrain-gomoku-*
 
 #folder
 liskvork*
