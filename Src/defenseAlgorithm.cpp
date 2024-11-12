@@ -33,7 +33,8 @@ bool defenseAlgorithm::canBlockMove(gomoku_t *game, int x, int y)
 void defenseAlgorithm::bestMove(
     gomoku_t *game, int x, int y, int dx, int dy, int pIndex)
 {
-  int bestMoveIdx = _posBestMove[pIndex];
+  int bestMoveIdx = _posBestMove[pIndex][0];
+  int bestMoveScore = _posBestMove[pIndex][1];
 
   int nx = x + dx * bestMoveIdx;
   int ny = y + dy * bestMoveIdx;
@@ -42,6 +43,7 @@ void defenseAlgorithm::bestMove(
     if (game->map[ny][nx] == TILE_STATE::EMPTY) {
       game->defense.best_move.x = nx;
       game->defense.best_move.y = ny;
+      game->defense.risk_level = bestMoveScore;
     }
   }
 }
