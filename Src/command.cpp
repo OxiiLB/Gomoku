@@ -87,7 +87,7 @@ void Command::board(ISystem *system, gomoku_t *game)
     else {
       if (entry.size() < 3) {
         _log.printCommandError(COMMANDS::BOARD);
-        return;
+        continue;
       }
       int x = atoi(entry.at(0).c_str());
       int y = atoi(entry.at(1).c_str());

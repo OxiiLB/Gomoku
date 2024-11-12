@@ -15,7 +15,6 @@ Log::~Log() {}
 void Log::SendResponse(std::string message)
 {
   std::cout << message << std::endl;
-  // writeInFile(message);
 }
 
 void Log::printCommandError(COMMANDS command)

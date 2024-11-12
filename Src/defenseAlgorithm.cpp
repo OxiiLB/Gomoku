@@ -85,23 +85,11 @@ void defenseAlgorithm::executeDefense(gomoku_t *game)
 {
   game->defense.best_move.x = -1;
   game->defense.best_move.y = -1;
+  game->defense.risk_level = 0;
   for (int y = 0; y < game->size.y; y++) {
     for (int x = 0; x < game->size.x; x++) {
       if (checkDefenseMove(game, x, y, TILE_STATE::ME, TILE_STATE::PLAYER2)) {
         return;
-      }
-    }
-  }
-  if (game->defense.best_move.x == -1 && game->defense.best_move.y == -1) {
-    bool playing = true;
-    for (int y = 0; playing != false && y < game->size.y; y++) {
-      for (int x = 0; playing != false && x < game->size.x; x++) {
-        if (game->map[y][x] == TILE_STATE::EMPTY) {
-          game->map[y][x] = TILE_STATE::ME;
-          game->defense.best_move.x = x;
-          game->defense.best_move.y = y;
-          playing = false;
-        }
       }
     }
   }

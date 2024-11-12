@@ -114,12 +114,21 @@ void System::gameLoop()
   bool isRunning = true;
   initiateStruct(&_game);
 
-  _brain = Brain(); ////////////////////////////////
+  _brain = Brain();
   _defense = defenseAlgorithm();
+
+  auto moveResponse = [this](int x, int y) {
+    _game.map[y][x] = TILE_STATE::ME;
+    _game.me.x = x;
+    _game.me.y = y;
+    std::cout << x << "," << y << std::endl;
+  };
 
   while (isRunning) {
     std::string line;
     std::getline(std::cin, line);
+    if (line.empty())
+      continue;
     std::vector<std::string> entry = splitString(line);
 
     command(&_game, entry, &isRunning);
@@ -127,18 +136,20 @@ void System::gameLoop()
     if (_game.state == GAME_STATE::PLAY && isRunning) {
       if (_game.my_turn) {
         std::thread bgThread([&]() { _defense.executeDefense(&_game); });
-        _brain.getBestAttackMove(&_game); ////////////////////////////////////////////////
+        _brain.getBestAttackMove(&_game);
         bool playing = true;
         _game.my_turn = false;
 
         if (bgThread.joinable())
           bgThread.join();
-        _game.map[_game.defense.best_move.y][_game.defense.best_move.x] =
-            TILE_STATE::ME;
-        _game.me.x = _game.defense.best_move.x;
-        _game.me.y = _game.defense.best_move.y;
-        std::cout << _game.defense.best_move.x << ","
-                  << _game.defense.best_move.y << std::endl;
+
+        if (_game.defense.risk_level != 0) {
+          if (_game.attack.win_level > _game.defense.risk_level)
+            moveResponse(_game.attack.best_move.x, _game.attack.best_move.y);
+          else
+            moveResponse(_game.defense.best_move.x, _game.defense.best_move.y);
+        } else
+          moveResponse(_game.attack.best_move.x, _game.attack.best_move.y);
       }
       if (_game.god_mode.map)
         displayGame(&_game);
