@@ -59,7 +59,6 @@ bool defenseAlgorithm::checkDirection(
     }
     _direction.push_back(game->map[ny][nx]);
   }
-  std::cout << std::endl;
   for (int i = 0; i < _pattern.size(); i++) {
     if (_direction == _pattern[i]) {
       *pIndex = i;
