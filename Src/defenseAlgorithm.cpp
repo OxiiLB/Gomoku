@@ -33,9 +33,9 @@ bool defenseAlgorithm::checkDirection(gomoku_t *game, int x, int y, int dx, int 
         int ny = y + i * dy;
         if (nx >= 0 && nx < game->size.x && ny >= 0 && ny < game->size.y)
         {
-            if (game->map[nx][ny] == TILE_STATE::PLAYER2)
+            if (game->map[ny][nx] == TILE_STATE::PLAYER2)
                 count++;
-            else if (game->map[nx][ny] == TILE_STATE::ME || game->map[nx][ny] == TILE_STATE::EMPTY)
+            else if (game->map[ny][nx] == TILE_STATE::ME || game->map[ny][nx] == TILE_STATE::EMPTY)
                 count = 0;
             if (count == 4)
                 return true;
@@ -46,7 +46,7 @@ bool defenseAlgorithm::checkDirection(gomoku_t *game, int x, int y, int dx, int 
 
 bool defenseAlgorithm::checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent)
 {
-    if (game->map[x][y] == TILE_STATE::EMPTY)
+    if (game->map[y][x] == TILE_STATE::EMPTY)
     {
         if (canBlockMove(game, x, y))
             return true;
@@ -56,13 +56,12 @@ bool defenseAlgorithm::checkDefenseMove(gomoku_t *game, int x, int y, TILE_STATE
 
 void defenseAlgorithm::executeDefense(gomoku_t *game)
 {
-    for (int x = 0; x < game->size.x; x++)
+    for (int y = 0; y < game->size.y; y++)
     {
-        for (int y = 0; y < game->size.y; y++)
+        for (int x = 0; x < game->size.x; x++)
         {
             if (checkDefenseMove(game, x, y, TILE_STATE::ME, TILE_STATE::PLAYER2))
             {
-                std::cout << "Defense move: " << x << " " << y << std::endl;
                 game->defense.best_move.x = x;
                 game->defense.best_move.y = y;
                 return;
