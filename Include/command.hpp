@@ -8,11 +8,11 @@
 #pragma once
 
 #include "i_command.hpp"
+#include "log.hpp"
 #include <iostream>
 #include <memory>
 
-class Command : virtual public ICommand
-{
+class Command : virtual public ICommand {
 public:
   Command();
   ~Command();
@@ -24,8 +24,10 @@ public:
   void begin(gomoku_t *game) override;
   void board(ISystem *system, gomoku_t *game) override;
   void about() override;
-  void error(COMMAND_ERROR command) override;
   void godMode(gomoku_t *game, std::vector<std::string> entry) override;
   void takeBack(gomoku_t *game, std::vector<std::string> entry) override;
   void play(gomoku_t *game, std::vector<std::string> entry) override;
+
+  private:
+    Log _log;
 };

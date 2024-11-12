@@ -7,17 +7,18 @@
 
 #pragma once
 
-enum class COMMAND_ERROR {
+enum class COMMANDS {
   START,
   RECTSTART,
   BOARD,
   TURN,
   BEGIN,
+  RESTART,
 };
 
 enum class GAME_STATE {
-  WIN,
   LOSE,
+  WIN,
   PLAY,
   WAIT,
 };
