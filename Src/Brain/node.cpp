@@ -16,8 +16,8 @@ void Node::initUntriedMoves()
     int i = 0;
     int j = 0;
 
-    for (i = 0; i < _gameState.size; i++) {
-        for (j = 0; j < _gameState.size; ++j) {
+    for (i = 0; i < _gameState.size.x; i++) {
+        for (j = 0; j < _gameState.size.y; ++j) {
             if (_gameState.map[i][j] == TILE_STATE::EMPTY) {
                 _untriedMoves.emplace_back(i, j);
             }

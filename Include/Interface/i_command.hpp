@@ -9,8 +9,10 @@
 #include "struct.hpp"
 #include <i_system.hpp>
 #include <string>
+#include <memory>
 
-class ICommand {
+class ICommand
+{
 public:
   virtual ~ICommand() = default;
   virtual void start(gomoku_t *game, std::vector<std::string> entry) = 0;
@@ -22,4 +24,5 @@ public:
   virtual void board(ISystem *system, gomoku_t *game) = 0;
   virtual void about() = 0;
   virtual void error(COMMAND_ERROR command) = 0;
+  virtual void godMode(gomoku_t *game, std::vector<std::string> entry) = 0;
 };

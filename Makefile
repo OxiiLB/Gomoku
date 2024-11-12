@@ -8,8 +8,9 @@
 SRC			=	main.cpp		\
 
 
-FILE		=	command.cpp		\
-				system.cpp		\
+FILE		=	command.cpp				\
+				system.cpp				\
+				defenseAlgorithm.cpp	\
 				Brain/game_logic.cpp	\
 				Brain/mcts.cpp	\
 				Brain/node.cpp	\

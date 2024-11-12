@@ -98,12 +98,11 @@ std::pair<int, int> MCTS::findBestMove(gomoku_t &game)
         }
         
         GAME_STATE result = simulate(node);
-        if (result == GAME_STATE::WIN) {
-
-            std::cout << "WIN: " << static_cast<double>(result) << std::endl; ////////////////////////////////////
-        } else {
-            std::cout << "LOSE: " << static_cast<double>(result) << std::endl; ////////////////////////////////////
-        }
+        // if (result == GAME_STATE::WIN) {
+        //     std::cout << "WIN: " << static_cast<double>(result) << std::endl; ////////////////////////////////////
+        // } else {
+        //     std::cout << "LOSE: " << static_cast<double>(result) << std::endl; ////////////////////////////////////
+        // }
 
         backPropagate(node, static_cast<double>(result));
     }

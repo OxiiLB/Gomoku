@@ -13,8 +13,8 @@ std::vector<std::pair<int, int>> GameLogic::getAvailableMoves(const gomoku_t &ga
     int j = 0;
     std::vector<std::pair<int, int>> moves;
 
-    for (i = 0; i < gameState.size; ++i) {
-        for (j = 0; j < gameState.size; ++j) {
+    for (i = 0; i < gameState.size.x; ++i) {
+        for (j = 0; j < gameState.size.y; ++j) {
             if (gameState.map[i][j] == TILE_STATE::EMPTY) {
                 moves.push_back({i, j});
             }
@@ -31,8 +31,8 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     int j = 0;
 
     // Horizontal check
-    for (int i = 0; i < gameState.size; ++i) {
-        for (int j = 0; j <= gameState.size - 5; ++j) {
+    for (int i = 0; i < gameState.size.x; ++i) {
+        for (int j = 0; j <= gameState.size.y - 5; ++j) {
             if (gameState.map[i][j] == TILE_STATE::ME &&
                 gameState.map[i][j] == gameState.map[i][j + 1] &&
                 gameState.map[i][j] == gameState.map[i][j + 2] &&
@@ -44,8 +44,8 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     }
 
     // Vertical check
-    for (int i = 0; i <= gameState.size - 5; ++i) {
-        for (int j = 0; j < gameState.size; ++j) {
+    for (int i = 0; i <= gameState.size.x - 5; ++i) {
+        for (int j = 0; j < gameState.size.y; ++j) {
             if (gameState.map[i][j] == TILE_STATE::ME &&
                 gameState.map[i + 1][j] == TILE_STATE::ME &&
                 gameState.map[i + 2][j] == TILE_STATE::ME &&
@@ -57,8 +57,8 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     }
 
     // Diagonal (bottom-left to top-right) check
-    for (int i = 0; i <= gameState.size - 5; ++i) {
-        for (int j = 0; j <= gameState.size - 5; ++j) {
+    for (int i = 0; i <= gameState.size.x - 5; ++i) {
+        for (int j = 0; j <= gameState.size.y - 5; ++j) {
             if (gameState.map[i][j] == TILE_STATE::ME &&
                 gameState.map[i + 1][j + 1] == TILE_STATE::ME &&
                 gameState.map[i + 2][j + 2] == TILE_STATE::ME &&
@@ -70,8 +70,8 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     }
 
     // Diagonal (top-left to bottom-right) check
-    for (int i = 0; i <= gameState.size - 5; ++i) {  // Start from i = 0, not i = 4
-        for (int j = 0; j <= gameState.size - 5; ++j) { // Check columns as well
+    for (int i = 0; i <= gameState.size.x - 5; ++i) {  // Start from i = 0, not i = 4
+        for (int j = 0; j <= gameState.size.y - 5; ++j) { // Check columns as well
             if (gameState.map[i][j] == TILE_STATE::ME &&
                 gameState.map[i + 1][j + 1] == TILE_STATE::ME &&
                 gameState.map[i + 2][j + 2] == TILE_STATE::ME &&
@@ -91,8 +91,8 @@ bool GameLogic::checkDraw(const gomoku_t &gameState) const
     int i = 0;
     int j = 0;
 
-    for (i = 0; i < gameState.size; ++i) {
-        for (j = 0; j < gameState.size; ++j) {
+    for (i = 0; i < gameState.size.x; ++i) {
+        for (j = 0; j < gameState.size.y; ++j) {
             if (gameState.map[i][j] == TILE_STATE::EMPTY) {
                 return false;
             }

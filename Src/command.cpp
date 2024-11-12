@@ -13,13 +13,15 @@ Command::~Command() {}
 
 void Command::start(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 2) {
+  if (entry.size() < 2)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
   game->size.x = atoi(entry.back().c_str());
   game->size.y = atoi(entry.back().c_str());
-  if (game->size.x < 5) {
+  if (game->size.x < 5)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
@@ -31,13 +33,15 @@ void Command::start(gomoku_t *game, std::vector<std::string> entry)
 
 void Command::rectStart(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 3) {
+  if (entry.size() < 3)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
   game->size.x = atoi(entry.at(1).c_str());
   game->size.y = atoi(entry.at(2).c_str());
-  if (game->size.x < 5 || game->size.y < 5) {
+  if (game->size.x < 5 || game->size.y < 5)
+  {
     error(COMMAND_ERROR::RECTSTART);
     return;
   }
@@ -57,7 +61,8 @@ void Command::reStart(gomoku_t *game)
 
 void Command::turn(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 3) {
+  if (entry.size() < 3)
+  {
     error(COMMAND_ERROR::TURN);
     return;
   }
@@ -65,33 +70,34 @@ void Command::turn(gomoku_t *game, std::vector<std::string> entry)
   game->opponent.y = atoi(entry.at(2).c_str());
   if (game->opponent.x < 0 || game->opponent.y < 0 ||
       game->opponent.x >= game->size.x || game->opponent.y >= game->size.y ||
-      game->map[game->opponent.x][game->opponent.y] != TILE_STATE::EMPTY) {
+      game->map[game->opponent.y][game->opponent.x] != TILE_STATE::EMPTY)
+  {
     error(COMMAND_ERROR::TURN);
     return;
   }
-  game->map[game->opponent.x][game->opponent.y] = TILE_STATE::PLAYER2;
+  game->map[game->opponent.y][game->opponent.x] = TILE_STATE::PLAYER2;
   game->my_turn = true;
-  std::cout << game->opponent.x << "," << game->opponent.y << std::endl;
 }
 
 void Command::begin(gomoku_t *game)
 {
-  std::cout << "BEGIN" << std::endl;
-  std::cout << "1, 1" << std::endl;
-  game->my_turn = false;
+  game->my_turn = true;
 }
 
 void Command::board(ISystem *system, gomoku_t *game)
 {
   bool isRunning = true;
-  while (isRunning) {
+  while (isRunning)
+  {
     std::string line;
     std::getline(std::cin, line);
     std::vector<std::string> entry = system->splitString(line);
     if (entry.at(0) == "DONE")
       isRunning = false;
-    else {
-      if (entry.size() < 3) {
+    else
+    {
+      if (entry.size() < 3)
+      {
         std::cout << "ERROR message - invalid argument" << std::endl;
         error(COMMAND_ERROR::BOARD);
         return;
@@ -100,21 +106,27 @@ void Command::board(ISystem *system, gomoku_t *game)
       int y = atoi(entry.at(1).c_str());
       int player = atoi(entry.at(2).c_str());
       if (x < 0 || y < 0 || x >= game->size.x || y >= game->size.y ||
-          game->map[x][y] != TILE_STATE::EMPTY) {
+          game->map[y][x] != TILE_STATE::EMPTY)
+      {
         error(COMMAND_ERROR::BOARD);
         return;
       }
-      if (player == 1) {
-        game->map[x][y] = TILE_STATE::ME;
+      if (player == 1)
+      {
+        game->map[y][x] = TILE_STATE::ME;
         game->me.x = x;
         game->me.y = y;
-      } else {
-        game->map[x][y] = TILE_STATE::PLAYER2;
+      }
+      else
+      {
+        game->map[y][x] = TILE_STATE::PLAYER2;
         game->opponent.x = x;
         game->opponent.y = y;
       }
     }
   }
+  game->my_turn = true;
+  game->state = GAME_STATE::PLAY;
 }
 
 void Command::about()
@@ -126,22 +138,33 @@ void Command::about()
 
 void Command::info(gomoku_t *game, std::vector<std::string> entry)
 {
-  if (entry.size() < 3) {
+  if (entry.size() < 3)
+  {
     error(COMMAND_ERROR::START);
     return;
   }
   int value = atoi(entry.at(2).c_str());
   std::string command = entry.at(1);
-  if (command == "timeout_turn") {
+  if (command == "timeout_turn")
+  {
     game->global_info.timeout_turn = std::chrono::milliseconds(value);
-  } else if (command == "timeout_match") {
+  }
+  else if (command == "timeout_match")
+  {
     game->global_info.timeout_match = std::chrono::milliseconds(value);
-  } else if (command == "time_left") {
+  }
+  else if (command == "time_left")
+  {
     game->global_info.time_left = std::chrono::milliseconds(value);
-  } else if (command == "max_memory") {
+  }
+  else if (command == "max_memory")
+  {
     game->global_info.max_memory = value;
-  } else if (command == "game_type") {
-    switch (value) {
+  }
+  else if (command == "game_type")
+  {
+    switch (value)
+    {
     case 0:
       game->global_info.game_type = GAME_TYPE::HUMAN;
       break;
@@ -158,8 +181,11 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
       game->global_info.game_type = GAME_TYPE::HUMAN;
       break;
     }
-  } else if (command == "rule") {
-    switch (value) {
+  }
+  else if (command == "rule")
+  {
+    switch (value)
+    {
     case 1:
       game->global_info.rule = RULE::EXACTLY_FIVE;
       break;
@@ -176,19 +202,34 @@ void Command::info(gomoku_t *game, std::vector<std::string> entry)
       game->global_info.rule = RULE::EXACTLY_FIVE;
       break;
     }
-  } else if (command == "evaluate") {
+  }
+  else if (command == "evaluate")
+  {
     if (entry.size() < 4)
       return;
     game->global_info.evaluate.x = atoi(entry.at(2).c_str());
     game->global_info.evaluate.y = atoi(entry.at(3).c_str());
-  } else if (command == "folder") {
+  }
+  else if (command == "folder")
+  {
     game->global_info.folder = value;
   }
 }
 
+void Command::godMode(gomoku_t *game, std::vector<std::string> entry)
+{
+  if (entry.size() < 2)
+  {
+    return;
+  }
+  if (entry.at(1) == "map")
+    game->god_mode.map = !game->god_mode.map;
+}
+
 void Command::error(COMMAND_ERROR command)
 {
-  switch (command) {
+  switch (command)
+  {
   case COMMAND_ERROR::START:
     std::cout << "ERROR message - unsupported size or other error" << std::endl;
     break;
@@ -203,11 +244,13 @@ void Command::error(COMMAND_ERROR command)
     std::cout << "ERROR message - invalid argument or out of table"
               << std::endl;
     break;
-  case COMMAND_ERROR::RECTSTART: {
+  case COMMAND_ERROR::RECTSTART:
+  {
     std::cout
         << "ERROR message - rectangular board is not supported or other error"
         << std::endl;
-  } break;
+  }
+  break;
   default:
     break;
   }

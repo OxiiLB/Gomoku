@@ -12,11 +12,13 @@
 
 class Brain {
     public:
-        Brain(gomoku_t &game) : _game(game), _mcts(game) {}
-
-        std::pair<int, int> getNextMove() { return _mcts.findBestMove(_game); }
-    
-    private:
-        gomoku_t &_game;
-        MCTS _mcts;
+        Brain() {}
+        // ~Brain() {}
+        void getBestAttackMove(gomoku_t *game)
+        {
+            MCTS mcts(*game);
+            std::pair<int, int> getBestAttackMove = mcts.findBestMove(*game);
+            game->attack.best_move.x = getBestAttackMove.first;
+            game->attack.best_move.y = getBestAttackMove.second;
+        }
 };
