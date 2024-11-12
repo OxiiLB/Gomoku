@@ -25,4 +25,6 @@ public:
   virtual void about() = 0;
   virtual void error(COMMAND_ERROR command) = 0;
   virtual void godMode(gomoku_t *game, std::vector<std::string> entry) = 0;
+  virtual void takeBack(gomoku_t *game, std::vector<std::string> entry) = 0;
+  virtual void play(gomoku_t *game, std::vector<std::string> entry) = 0;
 };

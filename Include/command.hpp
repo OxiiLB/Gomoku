@@ -26,4 +26,6 @@ public:
   void about() override;
   void error(COMMAND_ERROR command) override;
   void godMode(gomoku_t *game, std::vector<std::string> entry) override;
+  void takeBack(gomoku_t *game, std::vector<std::string> entry) override;
+  void play(gomoku_t *game, std::vector<std::string> entry) override;
 };
