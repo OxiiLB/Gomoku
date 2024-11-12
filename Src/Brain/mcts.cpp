@@ -85,7 +85,7 @@ void MCTS::backPropagate(Node *node, int depth) {
 
 Node *MCTS::getBestChildInfo(gomoku_t &game)
 {
-    _root = std::make_unique<Node>(game, nullptr, game.opponent);
+    _root = std::make_unique<Node>(game, nullptr, game.me);
 
     auto start = std::chrono::steady_clock::now();
     auto timeLimit = std::chrono::duration<double>(_timeLimit);
@@ -98,7 +98,7 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
         if (!node->isTerminal()) {
             node = expand(node);
         }
-        
+
         int depth = simulate(node);
 
         backPropagate(node, depth);
