@@ -69,6 +69,11 @@ std::vector<std::string> System::splitString(const std::string &str)
     std::istringstream subiss(word);
     std::string subword;
     while (std::getline(subiss, subword, ',')) {
+      subword.erase(
+          std::remove_if(subword.begin(),
+                         subword.end(),
+                         [](unsigned char c) { return std::isspace(c); }),
+          subword.end());
       if (!subword.empty()) {
         result.push_back(subword);
       }

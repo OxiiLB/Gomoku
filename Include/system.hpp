@@ -9,6 +9,7 @@
 #include "i_system.hpp"
 #include "defenseAlgorithm.hpp"
 #include "struct.hpp"
+#include "log.hpp"
 #include "brain.hpp"
 #include <thread>
 #include <atomic>
@@ -31,5 +32,6 @@ public:
 protected:
   gomoku_t _game;
   defenseAlgorithm _defense;
+  Log _log;
   Brain _brain;
 };
