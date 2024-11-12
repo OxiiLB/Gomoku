@@ -17,8 +17,8 @@ enum class COMMANDS {
 };
 
 enum class GAME_STATE {
-  WIN,
   LOSE,
+  WIN,
   PLAY,
   WAIT,
 };

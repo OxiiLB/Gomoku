@@ -78,6 +78,11 @@ typedef struct defenseAlgorithm_s {
   int risk_level;
 } defenseAlgorithm_t;
 
+typedef struct attackAlgorithm_s {
+  coord_t best_move;
+  int win_level;
+} attackAlgorithm_t;
+
 typedef struct gomoku_s {
   std::vector<std::vector<TILE_STATE>> map;
   bool my_turn;
@@ -88,4 +93,5 @@ typedef struct gomoku_s {
   global_info_t global_info;
   god_mode_t god_mode;
   defenseAlgorithm_t defense;
+  attackAlgorithm_t attack;
 } gomoku_t;

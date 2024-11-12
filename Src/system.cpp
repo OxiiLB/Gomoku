@@ -114,6 +114,7 @@ void System::gameLoop()
   bool isRunning = true;
   initiateStruct(&_game);
 
+  _brain = Brain(); ////////////////////////////////
   _defense = defenseAlgorithm();
 
   while (isRunning) {
@@ -126,6 +127,7 @@ void System::gameLoop()
     if (_game.state == GAME_STATE::PLAY && isRunning) {
       if (_game.my_turn) {
         std::thread bgThread([&]() { _defense.executeDefense(&_game); });
+        _brain.getBestAttackMove(&_game); ////////////////////////////////////////////////
         bool playing = true;
         _game.my_turn = false;
 
