@@ -100,6 +100,7 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
         }
         
         int depth = simulate(node);
+
         backPropagate(node, depth);
     }
 

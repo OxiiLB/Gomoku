@@ -49,13 +49,12 @@ Node *Node::expand()
 
 Node *Node::findBestChild() {
     Node *bestChild = nullptr;
-    int bestDepth = 0;
+    double bestScore = std::numeric_limits<double>::infinity();
 
     for (auto &child : _children) {
-        int childDepth = child->getMinWinningDepth();
-
-        if (childDepth < bestDepth) {
-            bestDepth = childDepth;
+        double childScore = child->getAverageWinningDepth();
+        if (childScore < bestScore) {
+            bestScore = childScore;
             bestChild = child.get();
         }
     }

@@ -16,8 +16,8 @@ class Node
 {
 public:
     Node(const gomoku_t &gameState, Node *parent = nullptr, coord_t move = {0, 0})
-    : _gameState(gameState), _parent(parent), _lastMove(move), _value(0), 
-      _minWinDepth(0) { initUntriedMoves(); }
+        : _gameState(gameState), _parent(parent), _lastMove(move), _value(0),
+          _minWinDepth(-1) { initUntriedMoves(); }
 
     bool isFullyExpanded() const { return _untriedMoves.empty(); }
     bool isTerminal() const { return (_gameState.state != GAME_STATE::PLAY); }
@@ -30,7 +30,8 @@ public:
     {
         _totalWinDepth += depth;
         _winCount++;
-        if (depth < _minWinDepth || _minWinDepth == 0)
+
+        if (_minWinDepth == -1 || depth < _minWinDepth)
         {
             _minWinDepth = depth;
         }
@@ -56,7 +57,7 @@ private:
     double _value;
     int _totalWinDepth = 0;
     int _winCount = 0;
-    int _minWinDepth = 0;
+    int _minWinDepth = -1;
     std::vector<std::unique_ptr<Node>> _children;
     std::vector<std::pair<int, int>> _untriedMoves;
 

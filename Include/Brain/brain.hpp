@@ -21,9 +21,19 @@ public:
         Node *bestChild = mcts.getBestChildInfo(*game);
         if (bestChild)
         {
+            int depth = bestChild->getMinWinningDepth();
+
             game->attack.best_move.x = bestChild->getMove().first;
             game->attack.best_move.y = bestChild->getMove().second;
-            game->attack.win_level = bestChild->getMinWinningDepth();
+
+            if (depth == 0) {
+                game->attack.win_level = 1001;
+            } else if (depth == 1) {
+                game->attack.win_level = 101;
+            } else {
+                game->attack.win_level = 0;
+            }
+
         }
         else
         {
