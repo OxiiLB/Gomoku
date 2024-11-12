@@ -20,7 +20,8 @@ void Log::SendResponse(std::string message)
 void Log::printCommandError(COMMANDS command)
 {
   std::string message;
-  switch (command) {
+  switch (command)
+  {
   case COMMANDS::START:
     message = "ERROR message - unsupported size or other error";
     break;
@@ -39,6 +40,9 @@ void Log::printCommandError(COMMANDS command)
   case COMMANDS::RESTART:
     message = "ERROR message - game not started or other error";
     break;
+  case COMMANDS::PLAY:
+    message = "ERROR message - unsupported size or other error";
+    break;
   default:
     break;
   }
@@ -48,7 +52,8 @@ void Log::printCommandError(COMMANDS command)
 void Log::printCommandSuccess(COMMANDS command)
 {
   std::string message;
-  switch (command) {
+  switch (command)
+  {
   case COMMANDS::START:
     message = "OK";
     break;

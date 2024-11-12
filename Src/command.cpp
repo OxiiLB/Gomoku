@@ -189,36 +189,6 @@ void Command::godMode(gomoku_t *game, std::vector<std::string> entry)
     game->god_mode.map = !game->god_mode.map;
 }
 
-void Command::error(COMMAND_ERROR command)
-{
-  switch (command)
-  {
-  case COMMAND_ERROR::START:
-    std::cout << "ERROR message - unsupported size or other error" << std::endl;
-    break;
-  case COMMAND_ERROR::BOARD:
-    std::cout << "ERROR message - tile already played or argument invalid"
-              << std::endl;
-    break;
-  case COMMAND_ERROR::TURN:
-    std::cout << "ERROR message - invalid argument" << std::endl;
-    break;
-  case COMMAND_ERROR::BEGIN:
-    std::cout << "ERROR message - invalid argument or out of table"
-              << std::endl;
-    break;
-  case COMMAND_ERROR::RECTSTART:
-  {
-    std::cout
-        << "ERROR message - rectangular board is not supported or other error"
-        << std::endl;
-  }
-  break;
-  default:
-    break;
-  }
-}
-
 void Command::takeBack(gomoku_t *game, std::vector<std::string> entry)
 {
   if (entry.size() < 3)
@@ -235,7 +205,7 @@ void Command::play(gomoku_t *game, std::vector<std::string> entry)
 {
   if (entry.size() < 3)
   {
-    error(COMMAND_ERROR::TURN);
+    _log.printCommandError(COMMANDS::PLAY);
     return;
   }
   game->opponent.x = atoi(entry.at(1).c_str());
@@ -244,9 +214,9 @@ void Command::play(gomoku_t *game, std::vector<std::string> entry)
       game->opponent.x >= game->size.x || game->opponent.y >= game->size.y ||
       game->map[game->opponent.y][game->opponent.x] != TILE_STATE::EMPTY)
   {
-    error(COMMAND_ERROR::TURN);
+    _log.printCommandError(COMMANDS::PLAY);
     return;
   }
-  game->map[game->opponent.y][game->opponent.x] = TILE_STATE::PLAYER2;
+  game->map[game->opponent.y][game->opponent.x] = TILE_STATE::ME;
   game->my_turn = true;
 }
