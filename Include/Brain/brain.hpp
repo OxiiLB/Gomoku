@@ -7,11 +7,10 @@
 
 #pragma once
 
-#include "struct.hpp"
 #include "mcts.hpp"
+#include "struct.hpp"
 
-class Brain
-{
+class Brain {
 public:
     Brain() {}
     // ~Brain() {}
