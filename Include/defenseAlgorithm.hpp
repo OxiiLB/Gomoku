@@ -17,8 +17,7 @@ public:
   defenseAlgorithm();
   ~defenseAlgorithm();
 
-  bool checkDefenseMove(
-      gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent);
+  bool checkDefenseMove(gomoku_t *game);
 
   void executeDefense(gomoku_t *game);
   void bestMove(gomoku_t *game, int x, int y, int dx, int dy, int pIndex);
@@ -123,4 +122,6 @@ private:
                                                 {1, 100},
                                                 {1, 100}};
   std::vector<TILE_STATE> _direction;
+
+  std::vector<defenseAlgorithm_t> _possibility;
 };
