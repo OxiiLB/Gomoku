@@ -7,15 +7,18 @@
 
 #pragma once
 
-#include <iostream> ////////
+#include <iostream>
 #include <vector>
 #include <utility>
+#include <set>
+#include "enum.hpp"
 #include "struct.hpp"
 
 class GameLogic {
     public:
-        std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &state) const;
+        std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &gameState) const;
+        std::vector<std::pair<int, int>> getAvailableAdjacentMoves(const gomoku_t &gameState, TILE_STATE tileState) const;
 
-        bool checkWin(const gomoku_t &state) const;
-        bool checkDraw(const gomoku_t &state) const;
+        bool checkWin(const gomoku_t &gameState) const;
+        bool checkDraw(const gomoku_t &gameState) const;
 };

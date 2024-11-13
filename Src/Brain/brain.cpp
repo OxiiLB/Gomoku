@@ -14,8 +14,8 @@ void Brain::getBestAttackMove(gomoku_t *game)
   if (bestChild) {
     int depth = bestChild->getMinWinningDepth();
 
-    game->attack.best_move.x = bestChild->getMove().first;
-    game->attack.best_move.y = bestChild->getMove().second;
+    game->attack.best_move.x = bestChild->getFirstMove().first;
+    game->attack.best_move.y = bestChild->getFirstMove().second;
 
     if (depth == 0) {
       game->attack.win_level = 1001;

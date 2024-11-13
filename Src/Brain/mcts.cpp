@@ -8,103 +8,162 @@
 #include <iostream>
 #include "mcts.hpp"
 
+///////////////////////////////////////////////////////////////////////////////////////////
+std::ostream &operator<<(std::ostream &os, const TILE_STATE entry)
+{
+  switch (entry) {
+  case TILE_STATE::EMPTY:
+    os << "X";
+    break;
+  case TILE_STATE::ME:
+    os << "1";
+    break;
+  case TILE_STATE::PLAYER2:
+    os << "2";
+    break;
+  default:
+    os << "UNDEFINED";
+    break;
+  }
+  return os;
+}
+void displayCurrGame(gomoku_t *_game)
+{
+  int space = 1;
+  for (int i = _game->size.y; i > 9; i /= 10)
+    space++;
+
+  auto placeSpaceHeight = [](int x, int nbr) {
+    int remove_space = 0;
+    for (int i = nbr; i > 9; i /= 10)
+      remove_space++;
+    x -= remove_space;
+    for (int i = 0; i < x; i++)
+      std::cout << " ";
+  };
+
+  std::cout << std::endl;
+  for (int i = 0; i < _game->size.y; i++) {
+    std::cout << i;
+    placeSpaceHeight(space, i);
+    std::cout << "| ";
+    for (int j = 0; j < _game->size.x; j++) {
+      std::cout << _game->map[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 Node *MCTS::select(Node *node)
 {
-    while (!node->isTerminal() && node->isFullyExpanded()) {
-        node = node->findBestChild();
-    }
+    // while (!node->isTerminal() && node->isFullyExpanded())
+    // {
+    //     node = node->findBestChild();
+    // }
     return node;
 }
 
 Node *MCTS::expand(Node *node)
 {
-    if (node->isFullyExpanded()) {
-        return node;
-    }
-    return node->expand();
+    // if (node->isFullyExpanded())
+    // {
+    //     return node;
+    // }
+    // return node->expand();
+    return node;
 }
 
-int MCTS::simulate(Node *node) {
+int MCTS::simulate(Node *node)
+{
     gomoku_t simulatedState = node->getGameState();
     bool isCurrentPlayer = simulatedState.my_turn;
     int depth = 0;
 
-    if (simulatedState.state != GAME_STATE::PLAY) {
+    if (simulatedState.state != GAME_STATE::PLAY)
+    {
         return -1;
     }
-
-    std::vector<std::pair<int, int>> availableMoves = _gameLogic.getAvailableMoves(simulatedState);
-
-    std::vector<std::pair<int, int>> adjacentMoves;
-    for (const auto &move : availableMoves) {
-        if (std::abs(move.first - node->getMove().first) <= 1 &&
-            std::abs(move.second - node->getMove().second) <= 1) {
-            adjacentMoves.push_back(move);
+    std::pair<int, int> move;
+    std::vector<std::pair<int, int>> availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
+    std::vector<std::pair<int, int>> availableMovesOpponent = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::PLAYER2);
+    while (simulatedState.state == GAME_STATE::PLAY)
+    {
+        if (availableMovesMe.empty())
+        {
+            availableMovesMe = _gameLogic.getAvailableMoves(simulatedState);
         }
-    }
-    if (!adjacentMoves.empty()) {
-        availableMoves = adjacentMoves;
-    }
+        if (availableMovesOpponent.empty())
+        {
+            availableMovesOpponent = _gameLogic.getAvailableMoves(simulatedState);
+        }
 
-    while (simulatedState.state == GAME_STATE::PLAY) {
-        std::pair<int, int> move = availableMoves[rand() % availableMoves.size()];
+        if (isCurrentPlayer)
+        {
+            move = availableMovesMe[rand() % availableMovesMe.size()];
+        }
+        else
+        {
+            move = availableMovesOpponent[rand() % availableMovesOpponent.size()];
+        }
         simulatedState.map[move.first][move.second] = isCurrentPlayer ? TILE_STATE::ME : TILE_STATE::PLAYER2;
         simulatedState.my_turn = !isCurrentPlayer;
-        depth++;
 
-        if (isCurrentPlayer && _gameLogic.checkWin(simulatedState)) {
+        if (isCurrentPlayer && _gameLogic.checkWin(simulatedState))
+        {
             simulatedState.state = GAME_STATE::WIN;
             return depth;
         }
 
-        availableMoves = _gameLogic.getAvailableMoves(simulatedState);
-        if (_gameLogic.checkDraw(simulatedState)) {
+        if (_gameLogic.checkDraw(simulatedState))
+        {
             simulatedState.state = GAME_STATE::LOSE;
             return -1;
         }
 
         isCurrentPlayer = !isCurrentPlayer;
+        availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
+        availableMovesOpponent = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::PLAYER2);
+
+        depth++;
     }
     return -1;
 }
 
-
-void MCTS::backPropagate(Node *node, int depth) {
-    while (node != nullptr) {
-        if (depth > 0) {
+void MCTS::backPropagate(Node *node, int depth)
+{
+    while (node != nullptr)
+    {
+        if (depth >= 0)
+        {
             node->updateValue(1.0);
             node->addWinningDepth(depth);
-        } else {
-            node->updateValue(0.0);
         }
 
         node = node->getParent();
     }
 }
 
-
 Node *MCTS::getBestChildInfo(gomoku_t &game)
 {
-    _root = std::make_unique<Node>(game, nullptr, game.opponent);
+    std::cout << "root move: " << game.me.x << " " << game.me.y << std::endl; ////////////////////
+    _root = std::make_unique<Node>(game, nullptr, game.me);
+    std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
 
-    auto start = std::chrono::steady_clock::now();
-    auto timeLimit = std::chrono::duration<double>(_timeLimit);
-    if (timeLimit == std::chrono::duration<double>(0)) { ///// Temporary fix
-        timeLimit = std::chrono::duration<double>(1);
-    }
-
-    while (std::chrono::steady_clock::now() - start < timeLimit) {
-        Node *node = select(_root.get());
-        if (!node->isTerminal()) {
-            node = expand(node);
+    for (auto &move : testMoves)
+    {
+        if (game.me.x == move.first && game.me.y == move.second)
+        {
+            continue;
         }
-        
-        int depth = simulate(node);
-
-        backPropagate(node, depth);
+        std::cout << "test move: " << move.first << " " << move.second << std::endl; ////////////////////
+        Node *child = _root->expand(move);
+        child->setFirstMove(move);
+        int depth = simulate(child);
+        std::cout << "depth: " << depth << std::endl; ////////////////////
+        backPropagate(child, depth);
     }
-
     Node *bestChild = _root->findBestChild();
-
     return bestChild;
 }

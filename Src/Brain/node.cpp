@@ -8,37 +8,21 @@
 #include <cmath>
 #include <limits>
 #include <cstdlib>
+#include <algorithm>
+#include <iostream>
 #include "node.hpp"
 
 // Adds all possible moves to _untriedMoves based on the empty spaces in the current state.
-void Node::initUntriedMoves()
-{
-    int i = 0;
-    int j = 0;
-
-    for (i = 0; i < _gameState.size.x; i++) {
-        for (j = 0; j < _gameState.size.y; ++j) {
-            if (_gameState.map[i][j] == TILE_STATE::EMPTY) {
-                _untriedMoves.emplace_back(i, j);
-            }
-        }
-    }
-}
+// void Node::initUntriedMoves()
+// {
+// }
 
 // Applies an untried move to the game state, then creates a new child node representing the new game state.
-Node *Node::expand()
+Node *Node::expand(std::pair<int, int> move)
 {
-    if (_untriedMoves.empty()) {
-        return this;
-    }
-
-    std::pair<int, int> move = _untriedMoves.back();
-    _untriedMoves.pop_back();
-
     gomoku_t newGameState = _gameState;
 
-    newGameState.map[move.first][move.second] = (_gameState.my_turn ? TILE_STATE::ME : TILE_STATE::PLAYER2);
-    newGameState.my_turn = !newGameState.my_turn;
+    newGameState.map[move.first][move.second] = TILE_STATE::ME;
 
     coord_t moveCoord = {move.first, move.second};
     auto child = std::make_unique<Node>(newGameState, this, moveCoord);
@@ -49,15 +33,13 @@ Node *Node::expand()
 
 Node *Node::findBestChild() {
     Node *bestChild = nullptr;
-    double bestScore = std::numeric_limits<double>::infinity();
+    int bestDepth = std::numeric_limits<int>::max();
 
     for (auto &child : _children) {
-        double childScore = child->getAverageWinningDepth();
-        if (childScore < bestScore) {
-            bestScore = childScore;
+        if (child->getMinWinningDepth() < bestDepth) {
+            bestDepth = child->getMinWinningDepth();
             bestChild = child.get();
         }
     }
     return bestChild;
 }
-
