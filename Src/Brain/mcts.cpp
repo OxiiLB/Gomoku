@@ -87,28 +87,28 @@ int MCTS::simulate(Node *node)
     }
     std::pair<int, int> move;
     std::vector<std::pair<int, int>> availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
-    std::vector<std::pair<int, int>> availableMovesOpponent = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::PLAYER2);
+    // std::vector<std::pair<int, int>> availableMovesOpponent = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::PLAYER2);
     while (simulatedState.state == GAME_STATE::PLAY)
     {
         if (availableMovesMe.empty())
         {
             availableMovesMe = _gameLogic.getAvailableMoves(simulatedState);
         }
-        if (availableMovesOpponent.empty())
-        {
-            availableMovesOpponent = _gameLogic.getAvailableMoves(simulatedState);
-        }
+        // if (availableMovesOpponent.empty())
+        // {
+        //     availableMovesOpponent = _gameLogic.getAvailableMoves(simulatedState);
+        // }
 
         if (isCurrentPlayer)
         {
             move = availableMovesMe[rand() % availableMovesMe.size()];
         }
-        else
-        {
-            move = availableMovesOpponent[rand() % availableMovesOpponent.size()];
-        }
+        // else
+        // {
+        //     move = availableMovesOpponent[rand() % availableMovesOpponent.size()];
+        // }
         simulatedState.map[move.first][move.second] = isCurrentPlayer ? TILE_STATE::ME : TILE_STATE::PLAYER2;
-        simulatedState.my_turn = !isCurrentPlayer;
+        // simulatedState.my_turn = !isCurrentPlayer;
 
         if (isCurrentPlayer && _gameLogic.checkWin(simulatedState))
         {
@@ -124,7 +124,7 @@ int MCTS::simulate(Node *node)
 
         isCurrentPlayer = !isCurrentPlayer;
         availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
-        availableMovesOpponent = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::PLAYER2);
+        // availableMovesOpponent = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::PLAYER2);
 
         depth++;
     }
@@ -147,23 +147,41 @@ void MCTS::backPropagate(Node *node, int depth)
 
 Node *MCTS::getBestChildInfo(gomoku_t &game)
 {
-    std::cout << "root move: " << game.me.x << " " << game.me.y << std::endl; ////////////////////
+    //std::cout << "root move: " << game.me.x << " " << game.me.y << std::endl; ////////////////////
     _root = std::make_unique<Node>(game, nullptr, game.me);
-    std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
+    // std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
+    std::vector<std::pair<int, int>> testMoves = _gameLogic.tempGetAvailableAdjacentMoves(game, TILE_STATE::ME);
+
+    // if (testMoves.empty())
+    // {
+    //     testMoves = _gameLogic.getAvailableMoves(game);
+    //     std::pair<int, int> move = testMoves[rand() % testMoves.size()];
+    //     coord_t moveCoord = {move.first, move.second};
+    //     auto node = std::make_unique<Node>(game, nullptr, moveCoord);
+    //     node->setFirstMove(move);
+    //     return node.get();
+    // }
+
+    // for (auto &move : testMoves) {
+    //     std::cout << "test move: " << move.first << " " << move.second << std::endl; ////////////////////
+    // }
 
     for (auto &move : testMoves)
     {
+        //std::cout << "test move: " << move.first << " " << move.second << std::endl; ////////////////////
         if (game.me.x == move.first && game.me.y == move.second)
         {
             continue;
         }
-        std::cout << "test move: " << move.first << " " << move.second << std::endl; ////////////////////
         Node *child = _root->expand(move);
         child->setFirstMove(move);
         int depth = simulate(child);
-        std::cout << "depth: " << depth << std::endl; ////////////////////
+        // std::cout << "test move: " << move.first << " " << move.second << std::endl; ////////////////////
+        // std::cout << "depth: " << depth << std::endl; ////////////////////
         backPropagate(child, depth);
     }
+    
     Node *bestChild = _root->findBestChild();
+
     return bestChild;
 }

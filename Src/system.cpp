@@ -14,7 +14,7 @@
 #include <thread>
 #include <vector>
 
-std::ostream &operator<<(std::ostream &os, const TILE_STATE &entry)
+std::ostream &operator<<(std::ostream &os, TILE_STATE &entry)
 {
   switch (entry) {
   case TILE_STATE::EMPTY:
