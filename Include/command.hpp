@@ -25,6 +25,8 @@ public:
   void board(ISystem *system, gomoku_t *game) override;
   void about() override;
   void godMode(gomoku_t *game, std::vector<std::string> entry) override;
+  void takeBack(gomoku_t *game, std::vector<std::string> entry) override;
+  void play(gomoku_t *game, std::vector<std::string> entry) override;
 
   private:
     Log _log;

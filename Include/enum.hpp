@@ -14,6 +14,7 @@ enum class COMMANDS {
   TURN,
   BEGIN,
   RESTART,
+  PLAY,
 };
 
 enum class GAME_STATE {
