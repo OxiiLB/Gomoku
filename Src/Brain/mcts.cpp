@@ -150,7 +150,7 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
     //std::cout << "root move: " << game.me.x << " " << game.me.y << std::endl; ////////////////////
     _root = std::make_unique<Node>(game, nullptr, game.me);
     // std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
-    std::vector<std::pair<int, int>> testMoves = _gameLogic.tempGetAvailableAdjacentMoves(game, TILE_STATE::ME);
+    std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
 
     // if (testMoves.empty())
     // {
