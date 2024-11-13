@@ -52,6 +52,7 @@ bool defenseAlgorithm::checkDirection(
     gomoku_t *game, int x, int y, int dx, int dy, int *pIndex)
 {
   int nbrOfSame = 0;
+  int empty = 0;
   for (int i = 0; i < 5; i++) {
     int nx = x + dx * i;
     int ny = y + dy * i;
@@ -59,7 +60,13 @@ bool defenseAlgorithm::checkDirection(
       _direction.clear();
       return false;
     }
+    if (game->map[ny][nx] == TILE_STATE::EMPTY)
+      empty++;
     _direction.push_back(game->map[ny][nx]);
+    if (empty == 3){
+      _direction.clear();
+      return false;
+    }
   }
   for (int i = 0; i < _pattern.size(); i++) {
     if (_direction == _pattern[i]) {
@@ -74,10 +81,8 @@ bool defenseAlgorithm::checkDirection(
 bool defenseAlgorithm::checkDefenseMove(
     gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent)
 {
-  if (game->map[y][x] == TILE_STATE::PLAYER2) {
     if (canBlockMove(game, x, y))
       return true;
-  }
   return false;
 }
 
