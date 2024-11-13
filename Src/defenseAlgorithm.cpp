@@ -41,9 +41,11 @@ void defenseAlgorithm::bestMove(
 
   if (nx >= 0 && nx < game->size.x && ny >= 0 && ny < game->size.y) {
     if (game->map[ny][nx] == TILE_STATE::EMPTY) {
-      game->defense.best_move.x = nx;
-      game->defense.best_move.y = ny;
-      game->defense.risk_level = bestMoveScore;
+      defenseAlgorithm_t possibility;
+      possibility.best_move.x = nx;
+      possibility.best_move.y = ny;
+      possibility.risk_level = bestMoveScore;
+      _possibility.push_back(possibility);
     }
   }
 }
@@ -63,7 +65,7 @@ bool defenseAlgorithm::checkDirection(
     if (game->map[ny][nx] == TILE_STATE::EMPTY)
       empty++;
     _direction.push_back(game->map[ny][nx]);
-    if (empty == 3){
+    if (empty == 3) {
       _direction.clear();
       return false;
     }
@@ -78,11 +80,22 @@ bool defenseAlgorithm::checkDirection(
   return false;
 }
 
-bool defenseAlgorithm::checkDefenseMove(
-    gomoku_t *game, int x, int y, TILE_STATE player, TILE_STATE opponent)
+bool defenseAlgorithm::checkDefenseMove(gomoku_t *game)
 {
-    if (canBlockMove(game, x, y))
-      return true;
+
+  for (int y = 0; y < game->size.y; y++) {
+    for (int x = 0; x < game->size.x; x++) {
+      canBlockMove(game, x, y);
+    }
+  }
+  for (int i = 0; i < _possibility.size(); i++) {
+    if (_possibility[i].risk_level > game->defense.risk_level) {
+      game->defense.best_move.x = _possibility[i].best_move.x;
+      game->defense.best_move.y = _possibility[i].best_move.y;
+      game->defense.risk_level = _possibility[i].risk_level;
+    }
+  }
+  _possibility.clear();
   return false;
 }
 
@@ -91,11 +104,7 @@ void defenseAlgorithm::executeDefense(gomoku_t *game)
   game->defense.best_move.x = -1;
   game->defense.best_move.y = -1;
   game->defense.risk_level = 0;
-  for (int y = 0; y < game->size.y; y++) {
-    for (int x = 0; x < game->size.x; x++) {
-      if (checkDefenseMove(game, x, y, TILE_STATE::ME, TILE_STATE::PLAYER2)) {
-        return;
-      }
-    }
+  if (checkDefenseMove(game)) {
+    return;
   }
 }
