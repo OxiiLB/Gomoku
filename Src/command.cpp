@@ -188,3 +188,35 @@ void Command::godMode(gomoku_t *game, std::vector<std::string> entry)
   if (entry.at(1) == "map")
     game->god_mode.map = !game->god_mode.map;
 }
+
+void Command::takeBack(gomoku_t *game, std::vector<std::string> entry)
+{
+  if (entry.size() < 3)
+    return;
+
+  int x = atoi(entry.at(1).c_str());
+  int y = atoi(entry.at(2).c_str());
+  if (x < 0 || y < 0 || x >= game->size.x || y >= game->size.y)
+    return;
+  game->map[y][x] = TILE_STATE::EMPTY;
+}
+
+void Command::play(gomoku_t *game, std::vector<std::string> entry)
+{
+  if (entry.size() < 3)
+  {
+    _log.printCommandError(COMMANDS::PLAY);
+    return;
+  }
+  game->opponent.x = atoi(entry.at(1).c_str());
+  game->opponent.y = atoi(entry.at(2).c_str());
+  if (game->opponent.x < 0 || game->opponent.y < 0 ||
+      game->opponent.x >= game->size.x || game->opponent.y >= game->size.y ||
+      game->map[game->opponent.y][game->opponent.x] != TILE_STATE::EMPTY)
+  {
+    _log.printCommandError(COMMANDS::PLAY);
+    return;
+  }
+  game->map[game->opponent.y][game->opponent.x] = TILE_STATE::ME;
+  game->my_turn = true;
+}

@@ -107,6 +107,10 @@ void System::command(gomoku_t *_game,
     command.godMode(_game, entry);
   else if (entry.front() == "END")
     *isRunning = false;
+  else if (entry.front() == "TAKEBACK")
+    command.takeBack(_game, entry);
+  else if (_game->state == GAME_STATE::PLAY && entry.front() == "PLAY")
+    command.play(_game, entry);
 }
 
 void System::gameLoop()
