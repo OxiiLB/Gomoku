@@ -6,6 +6,7 @@
 */
 
 #include <iostream>
+#include <ctime>
 #include "mcts.hpp"
 
 Node *MCTS::select(Node *node)
@@ -62,7 +63,6 @@ int MCTS::simulate(Node *node)
             return -1;
         }
 
-        isCurrentPlayer = !isCurrentPlayer;
         availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
 
         depth++;
@@ -91,6 +91,7 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
 
     if (testMoves.empty())
     {
+        srand((unsigned) time(0));
         testMoves = _gameLogic.getAvailableMoves(game);
         std::pair<int, int> move = testMoves[rand() % testMoves.size()];
         coord_t moveCoord = {move.first, move.second};
