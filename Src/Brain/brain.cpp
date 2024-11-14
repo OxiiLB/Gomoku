@@ -5,34 +5,45 @@
 ** brain
 */
 
+#include <unordered_map>
 #include "brain.hpp"
 
 void Brain::getBestAttackMove(gomoku_t *game)
 {
   MCTS mcts(*game);
-  Node *bestChild = mcts.getBestChildInfo(*game);
-  if (bestChild) {
-    int depth = bestChild->getMinWinningDepth();
+  std::unordered_map<int, std::pair<int, int>> bestMoveInfo = mcts.getBestMoveInfo(*game);
+  if (!bestMoveInfo.empty())
+  {
+    int depth = bestMoveInfo.begin()->first;
 
-    game->attack.best_move.x = bestChild->getFirstMove().second;
-    game->attack.best_move.y = bestChild->getFirstMove().first;
+    game->attack.best_move.x = bestMoveInfo.begin()->second.first;
+    game->attack.best_move.y = bestMoveInfo.begin()->second.second;
 
-    if (depth == 0) {
+    if (depth == 0)
+    {
       game->attack.win_level = 1001;
-    } else if (depth == 1) {
+    }
+    else if (depth == 1)
+    {
       game->attack.win_level = 101;
-    } else {
+    }
+    else
+    {
       game->attack.win_level = 0;
     }
-  } else {
-    bool playing = true;
-    for (int y = 0; playing != false && y < game->size.y; y++) {
-      for (int x = 0; playing != false && x < game->size.x; x++) {
-        if (game->map[y][x] == TILE_STATE::EMPTY) {
-          game->map[y][x] = TILE_STATE::ME;
+  }
+  else
+  {
+    for (int y = 0; y < game->size.y; y++)
+    {
+      for (int x = 0; x < game->size.x; x++)
+      {
+        if (game->map[y][x] == TILE_STATE::EMPTY)
+        {
           game->attack.best_move.x = x;
           game->attack.best_move.y = y;
-          playing = false;
+          game->attack.win_level = 0;
+          return;
         }
       }
     }

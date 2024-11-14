@@ -7,84 +7,372 @@
 
 #include <iostream>
 #include <ctime>
+#include <unordered_map>
 #include "mcts.hpp"
 
-int MCTS::simulate(Node *node)
+bool MCTS::canWin(gomoku_t &gameState, RowInfo row, std::pair<int, int> pos, int depth)
 {
-    gomoku_t simulatedState = node->getGameState();
-    int depth = 0;
-
-    if (simulatedState.state != GAME_STATE::PLAY)
+    int i = 0;
+    int j = 0;
+    switch (row.direction)
     {
-        return -1;
+    case Direction::HORIZONTAL:
+        for (i = pos.first; i < pos.first + depth && i < gameState.size.x; i++)
+        {
+            if (gameState.map[i][pos.second] != TILE_STATE::EMPTY)
+            {
+                for (i = pos.first; i > pos.first - depth && i > 0; i--)
+                {
+                    if (gameState.map[i][pos.second] != TILE_STATE::EMPTY)
+                    {
+                        return false;
+                    }
+                }
+                row.positive = false;
+            }
+        }
+        break;
+    case Direction::VERTICAL:
+        for (j = pos.second; j < pos.second + depth && j < gameState.size.y; j++)
+        {
+            if (gameState.map[pos.first][j] != TILE_STATE::EMPTY)
+            {
+                for (j = pos.second; j > pos.second - depth && j > 0; j--)
+                {
+                    if (gameState.map[pos.first][j] != TILE_STATE::EMPTY)
+                    {
+                        return false;
+                    }
+                }
+                row.positive = false;
+            }
+        }
+        break;
+    case Direction::LEFT_DIAGONAL:
+        for (i = pos.first, j = pos.second; i < pos.first + depth && i < gameState.size.x && j < pos.second + depth && j < gameState.size.y; i++, j++)
+        {
+            if (gameState.map[i][j] != TILE_STATE::EMPTY)
+            {
+                for (i = pos.first, j = pos.second; i > pos.first - depth && i > 0 && j > pos.second - depth && j > 0; i--, j--)
+                {
+                    if (gameState.map[i][j] != TILE_STATE::EMPTY)
+                    {
+                        return false;
+                    }
+                }
+                row.positive = false;
+            }
+        }
+        break;
+    case Direction::RIGHT_DIAGONAL:
+        for (i = pos.first, j = pos.second; i > pos.first - depth && i > 0 && j < gameState.size.y && j < pos.second + depth; i--, j++)
+        {
+            if (gameState.map[i][j] != TILE_STATE::EMPTY)
+            {
+                for (i = pos.first, j = pos.second; i < pos.first + depth && i < gameState.size.x && j > pos.second - depth && j > 0; i++, j--)
+                {
+                    if (gameState.map[i][j] != TILE_STATE::EMPTY)
+                    {
+                        return false;
+                    }
+                }
+                row.positive = false;
+            }
+        }
+        break;
     }
-    std::pair<int, int> move;
-    std::vector<std::pair<int, int>> availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
-    while (simulatedState.state == GAME_STATE::PLAY)
-    {
-        if (availableMovesMe.empty())
-        {
-            availableMovesMe = _gameLogic.getAvailableMoves(simulatedState);
-        }
-
-        move = availableMovesMe[rand() % availableMovesMe.size()];
-
-        simulatedState.map[move.first][move.second] = TILE_STATE::ME;
-
-        if (_gameLogic.checkWin(simulatedState, TILE_STATE::ME))
-        {
-            simulatedState.state = GAME_STATE::WIN;
-            //std::cout << "Depth: " << depth << std::endl; ////////////////////////////////////
-            return depth;
-        }
-
-        if (_gameLogic.checkDraw(simulatedState))
-        {
-            simulatedState.state = GAME_STATE::LOSE;
-            return -1;
-        }
-
-        availableMovesMe = _gameLogic.getAvailableAdjacentMoves(simulatedState, TILE_STATE::ME);
-
-        depth++;
-    }
-    return -1;
+    return true;
 }
 
-void MCTS::backPropagate(Node *node, int depth)
+std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameState, std::vector<RowInfo> rows)
 {
-    while (node != nullptr) {
-        if (depth >= 0) {
-            node->addWinningDepth(depth);
+    RowInfo bestRow;
+    int longestRow = 0;
+    std::pair<int, int> lastMove;
+    int i = 0;
+    while (!rows.empty())
+    {
+        for (const auto &row : rows)
+        {
+            std::cout << "row.len: " << row.len << std::endl; //////////////////////////////////////////////
+            if (row.len > longestRow)
+            {
+                longestRow = row.len;
+                bestRow = row;
+            }
         }
-        node = node->getParent();
-    }
-}
-
-Node *MCTS::getBestChildInfo(gomoku_t &game)
-{
-    _root = std::make_unique<Node>(game, nullptr);
-    std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
-
-    if (testMoves.empty()) {
-        srand((unsigned) time(0));
-        testMoves = _gameLogic.getAvailableMoves(game);
-        std::pair<int, int> move = testMoves[rand() % testMoves.size()];
-        coord_t moveCoord = {move.first, move.second};
-        auto node = std::make_unique<Node>(game, nullptr);
-        node->setFirstMove(move);
-        return node.get();
-    }
-
-    for (auto &move : testMoves) {
-        if (game.me.x == move.first && game.me.y == move.second) {
+        std::cout << "bestRow.len: " << bestRow.len << std::endl;       //////////////////////////////
+        std::cout << "bestRow.startPos: " << bestRow.startPos.first << ", " << bestRow.startPos.second << std::endl; //////////////////////////////
+        std::cout << "bestRow.endPos: " << bestRow.endPos.first << ", " << bestRow.endPos.second << std::endl;       //////////////////////////////
+        int depth = (5 - bestRow.len);
+        if (canWin(gameState, bestRow, bestRow.startPos, depth))
+        {
+            lastMove = bestRow.startPos;
+        }
+        else if (canWin(gameState, bestRow, bestRow.endPos, depth))
+        {
+            lastMove = bestRow.endPos;
+        }
+        else
+        {
+            // I need it to try every other direction before moving on to the next one
+            rows.erase(rows.begin() + i);
+            i++;
             continue;
         }
-        Node *child = _root->expand(move);
-        child->setFirstMove(move);
-        int depth = simulate(child);
-        backPropagate(child, depth);
+        std::cout << "lastMove: " << lastMove.first << ", " << lastMove.second << std::endl; //////////////////////////////
+        std::pair<int, int> bestMove;
+        switch (bestRow.direction)
+        {
+        case Direction::HORIZONTAL:
+            if (bestRow.positive)
+            {
+                bestMove = {lastMove.first + 1, lastMove.second};
+            }
+            else
+            {
+                bestMove = {lastMove.first - 1, lastMove.second};
+            }
+            break;
+        case Direction::VERTICAL:
+            if (bestRow.positive)
+            {
+                bestMove = {lastMove.first, lastMove.second + 1};
+            }
+            else
+            {
+                bestMove = {lastMove.first, lastMove.second - 1};
+            }
+            break;
+        case Direction::LEFT_DIAGONAL:
+            if (bestRow.positive)
+            {
+                bestMove = {lastMove.first + 1, lastMove.second + 1};
+            }
+            else
+            {
+                bestMove = {lastMove.first - 1, lastMove.second - 1};
+            }
+            break;
+        case Direction::RIGHT_DIAGONAL:
+            if (bestRow.positive)
+            {
+                bestMove = {lastMove.first - 1, lastMove.second + 1};
+            }
+            else
+            {
+                bestMove = {lastMove.first + 1, lastMove.second - 1};
+            }
+            break;
+        }
+        return {{depth, bestMove}};
+    }
+    return {};
+}
+
+std::vector<std::pair<int, int>> MCTS::getAvailableMoves(const gomoku_t &gameState)
+{
+    int i = 0;
+    int j = 0;
+    std::vector<std::pair<int, int>> moves;
+
+    for (i = 0; i < gameState.size.y; ++i)
+    {
+        for (j = 0; j < gameState.size.x; ++j)
+        {
+            if (gameState.map[i][j] == TILE_STATE::EMPTY)
+            {
+                moves.push_back({j, i});
+            }
+        }
     }
 
-    return (_root->findBestChild());
+    return moves;
+}
+
+std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
+{
+    std::vector<RowInfo> rows;
+
+    // Horizontal Check
+    for (int i = 0; i < gameState.size.y; i++)
+    {
+        // std::cout << "horizontal" << std::endl; ///////////////////////////////////////////////
+        int count = 0;
+        std::pair<int, int> startPos;
+        for (int j = 0; j < gameState.size.x; j++)
+        {
+            if (gameState.map[i][j] == TILE_STATE::ME)
+            {
+                if (count == 0)
+                {
+                    startPos = {j, i};
+                }
+                count++;
+                std::cout << "count: " << count << std::endl; ///////////////////////////////////////////////
+                std::cout << "pos: " << j << ", " << i << std::endl; ///////////////////////////////////////////////
+            } else {
+                if (count > 0)
+                {
+                    RowInfo rowInfo;
+                    rowInfo.len = count;
+                    rowInfo.direction = Direction::HORIZONTAL;
+                    rowInfo.startPos = startPos;
+                    if (count == 1)
+                    {
+                        rowInfo.endPos = startPos;
+                    }
+                    else
+                    {
+                        rowInfo.endPos = {j - 1, i};
+                    }
+                    rows.push_back(rowInfo);
+                }
+                count = 0;
+            }
+        }
+    }
+
+    // Vertical Check
+    for (int j = 0; j < gameState.size.y; j++)
+    {
+        // std::cout << "vertical" << std::endl; ///////////////////////////////////////////////
+        int count = 0;
+        std::pair<int, int> startPos;
+        for (int i = 0; i < gameState.size.x; i++)
+        {
+            if (gameState.map[i][j] == TILE_STATE::ME)
+            {
+                if (count == 0)
+                {
+                    startPos = {j, i};
+                }
+                count++;
+            }
+            else
+            {
+                if (count > 0)
+                {
+                    RowInfo rowInfo;
+                    rowInfo.len = count;
+                    rowInfo.direction = Direction::VERTICAL;
+                    rowInfo.startPos = startPos;
+                    if (count == 1)
+                    {
+                        rowInfo.endPos = startPos;
+                    }
+                    else
+                    {
+                        rowInfo.endPos = {j, i - 1};
+                    }
+                    rows.push_back(rowInfo);
+                }
+                count = 0;
+            }
+        }
+    }
+
+    // Diagonal Check (top-left to bottom-right)
+    for (int i = 0; i <= gameState.size.y; i++)
+    {
+        // std::cout << "left diagonal" << std::endl; ///////////////////////////////////////////////
+        for (int j = 0; j <= gameState.size.x; j++)
+        {
+            int count = 0;
+            std::pair<int, int> startPos;
+            for (int k = 0; k + i < gameState.size.y && k + j < gameState.size.x; k++)
+            {
+                if (gameState.map[i + k][j + k] == TILE_STATE::ME)
+                {
+                    if (count == 0)
+                    {
+                        startPos = {j, i};
+                    }
+                    count++;
+                }
+                else
+                {
+                    if (count > 0)
+                    {
+                        RowInfo rowInfo;
+                        rowInfo.len = count;
+                        rowInfo.direction = Direction::LEFT_DIAGONAL;
+                        rowInfo.startPos = startPos;
+                        if (count == 1)
+                        {
+                            rowInfo.endPos = startPos;
+                        }
+                        else
+                        {
+                            rowInfo.endPos = {j + k - 1, i + k - 1};
+                        }
+                        rows.push_back(rowInfo);
+                    }
+                    count = 0;
+                }
+            }
+        }
+    }
+
+    // Anti-diagonal Check (top-right to bottom-left)
+    for (int i = 0; i <= gameState.size.y; i++)
+    {
+        // std::cout << "right diagonal" << std::endl; ///////////////////////////////////////////////
+        for (int j = -1; j < gameState.size.x; j++)
+        {
+            int count = 0;
+            std::pair<int, int> startPos;
+            for (int k = 0; k + i < gameState.size.y && j - k >= 0; k++)
+            {
+                if (gameState.map[i + k][j - k] == TILE_STATE::ME)
+                {
+                    if (count == 0)
+                    {
+                        startPos = {j, i};
+                    }
+                    count++;
+                }
+                else
+                {
+                    if (count > 0)
+                    {
+                        RowInfo rowInfo;
+                        rowInfo.len = count;
+                        rowInfo.direction = Direction::RIGHT_DIAGONAL;
+                        rowInfo.startPos = startPos;
+                        if (count == 1)
+                        {
+                            rowInfo.endPos = startPos;
+                        }
+                        else
+                        {
+                            rowInfo.endPos = {j - k + 1, i + k - 1};
+                        }
+                        rows.push_back(rowInfo);
+                    }
+                    count = 0;
+                }
+            }
+        }
+    }
+
+    return rows;
+}
+
+std::unordered_map<int, std::pair<int, int>> MCTS::getBestMoveInfo(gomoku_t &game)
+{
+    std::unordered_map<int, std::pair<int, int>> bestMoveInfo;
+    std::vector<RowInfo> rows = getRows(game);
+
+    srand((unsigned)time(0));
+    if (rows.empty())
+    {
+        // std::cout << "rows is empty" << std::endl; ///////////////////////////////////////////////
+        std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
+        return {{3, availableMoves[rand() % availableMoves.size()]}};
+    }
+
+    bestMoveInfo = getBestMove(game, rows);
+
+    return bestMoveInfo;
 }
