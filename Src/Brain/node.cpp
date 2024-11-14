@@ -12,12 +12,6 @@
 #include <iostream>
 #include "node.hpp"
 
-// Adds all possible moves to _untriedMoves based on the empty spaces in the current state.
-// void Node::initUntriedMoves()
-// {
-// }
-
-// Applies an untried move to the game state, then creates a new child node representing the new game state.
 Node *Node::expand(std::pair<int, int> move)
 {
     gomoku_t newGameState = _gameState;

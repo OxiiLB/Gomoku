@@ -9,25 +9,6 @@
 #include <ctime>
 #include "mcts.hpp"
 
-Node *MCTS::select(Node *node)
-{
-    // while (!node->isTerminal() && node->isFullyExpanded())
-    // {
-    //     node = node->findBestChild();
-    // }
-    return node;
-}
-
-Node *MCTS::expand(Node *node)
-{
-    // if (node->isFullyExpanded())
-    // {
-    //     return node;
-    // }
-    // return node->expand();
-    return node;
-}
-
 int MCTS::simulate(Node *node)
 {
     gomoku_t simulatedState = node->getGameState();
@@ -72,14 +53,10 @@ int MCTS::simulate(Node *node)
 
 void MCTS::backPropagate(Node *node, int depth)
 {
-    while (node != nullptr)
-    {
-        if (depth >= 0)
-        {
-            node->updateValue(1.0);
+    while (node != nullptr) {
+        if (depth >= 0) {
             node->addWinningDepth(depth);
         }
-
         node = node->getParent();
     }
 }
@@ -89,8 +66,7 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
     _root = std::make_unique<Node>(game, nullptr, game.me);
     std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
 
-    if (testMoves.empty())
-    {
+    if (testMoves.empty()) {
         srand((unsigned) time(0));
         testMoves = _gameLogic.getAvailableMoves(game);
         std::pair<int, int> move = testMoves[rand() % testMoves.size()];
@@ -100,10 +76,8 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
         return node.get();
     }
 
-    for (auto &move : testMoves)
-    {
-        if (game.me.x == move.first && game.me.y == move.second)
-        {
+    for (auto &move : testMoves) {
+        if (game.me.x == move.first && game.me.y == move.second) {
             continue;
         }
         Node *child = _root->expand(move);
@@ -111,8 +85,6 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
         int depth = simulate(child);
         backPropagate(child, depth);
     }
-    
-    Node *bestChild = _root->findBestChild();
 
-    return bestChild;
+    return (_root->findBestChild());
 }

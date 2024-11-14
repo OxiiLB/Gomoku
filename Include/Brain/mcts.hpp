@@ -24,8 +24,6 @@ class MCTS {
         std::unique_ptr<Node> _root;
         GameLogic _gameLogic;
 
-        Node *select(Node *node);
-        Node *expand(Node *node);
         int simulate(Node *node);
         void backPropagate(Node *node, int depth);
 };
