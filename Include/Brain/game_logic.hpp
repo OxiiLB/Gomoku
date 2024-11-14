@@ -19,6 +19,6 @@ class GameLogic {
         std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &gameState) const;
         std::vector<std::pair<int, int>> getAvailableAdjacentMoves(const gomoku_t &gameState, TILE_STATE tileState) const;
 
-        bool checkWin(const gomoku_t &gameState) const;
+        bool checkWin(const gomoku_t &gameState, TILE_STATE tileState) const;
         bool checkDraw(const gomoku_t &gameState) const;
 };

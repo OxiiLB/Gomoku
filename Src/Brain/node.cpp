@@ -18,8 +18,7 @@ Node *Node::expand(std::pair<int, int> move)
 
     newGameState.map[move.first][move.second] = TILE_STATE::ME;
 
-    coord_t moveCoord = {move.first, move.second};
-    auto child = std::make_unique<Node>(newGameState, this, moveCoord);
+    auto child = std::make_unique<Node>(newGameState, this);
     _children.push_back(std::move(child));
 
     return _children.back().get();

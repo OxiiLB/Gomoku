@@ -12,7 +12,6 @@
 int MCTS::simulate(Node *node)
 {
     gomoku_t simulatedState = node->getGameState();
-    bool isCurrentPlayer = simulatedState.my_turn;
     int depth = 0;
 
     if (simulatedState.state != GAME_STATE::PLAY)
@@ -30,11 +29,12 @@ int MCTS::simulate(Node *node)
 
         move = availableMovesMe[rand() % availableMovesMe.size()];
 
-        simulatedState.map[move.first][move.second] = isCurrentPlayer ? TILE_STATE::ME : TILE_STATE::PLAYER2;
+        simulatedState.map[move.first][move.second] = TILE_STATE::ME;
 
-        if (isCurrentPlayer && _gameLogic.checkWin(simulatedState))
+        if (_gameLogic.checkWin(simulatedState, TILE_STATE::ME))
         {
             simulatedState.state = GAME_STATE::WIN;
+            //std::cout << "Depth: " << depth << std::endl; ////////////////////////////////////
             return depth;
         }
 
@@ -63,7 +63,7 @@ void MCTS::backPropagate(Node *node, int depth)
 
 Node *MCTS::getBestChildInfo(gomoku_t &game)
 {
-    _root = std::make_unique<Node>(game, nullptr, game.me);
+    _root = std::make_unique<Node>(game, nullptr);
     std::vector<std::pair<int, int>> testMoves = _gameLogic.getAvailableAdjacentMoves(game, TILE_STATE::ME);
 
     if (testMoves.empty()) {
@@ -71,7 +71,7 @@ Node *MCTS::getBestChildInfo(gomoku_t &game)
         testMoves = _gameLogic.getAvailableMoves(game);
         std::pair<int, int> move = testMoves[rand() % testMoves.size()];
         coord_t moveCoord = {move.first, move.second};
-        auto node = std::make_unique<Node>(game, nullptr, moveCoord);
+        auto node = std::make_unique<Node>(game, nullptr);
         node->setFirstMove(move);
         return node.get();
     }

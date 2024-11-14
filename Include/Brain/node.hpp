@@ -15,8 +15,8 @@
 class Node
 {
 public:
-    Node(const gomoku_t &gameState, Node *parent = nullptr, coord_t move = {0, 0})
-        : _gameState(gameState), _parent(parent), _lastMove(move), _minWinDepth(-1) {}
+    Node(const gomoku_t &gameState, Node *parent = nullptr)
+        : _gameState(gameState), _parent(parent), _minWinDepth(-1) {}
 
     bool isTerminal() const { return (_gameState.state != GAME_STATE::PLAY); }
 
@@ -33,10 +33,9 @@ public:
     }
     
     void setFirstMove(std::pair<int, int> move) { _firstMove = move; }
+    std::pair<int, int> getFirstMove() const { return _firstMove; }
     
     int getMinWinningDepth() const { return _minWinDepth; }
-    std::pair<int, int> getFirstMove() const { return _firstMove; }
-    std::pair<int, int> getLastMove() const { return {_lastMove.x, _lastMove.y}; }
     gomoku_t getGameState() const { return _gameState; }
     Node *getParent() const { return _parent; }
 
@@ -47,7 +46,6 @@ public:
 private:
     gomoku_t _gameState;
     Node *_parent;
-    coord_t _lastMove;
     std::pair<int, int> _firstMove;
     std::vector<std::unique_ptr<Node>> _children;
 };

@@ -76,7 +76,7 @@ std::vector<std::pair<int, int>> GameLogic::getAvailableAdjacentMoves(const gomo
 }
 
 // Check for a sequence of 5
-bool GameLogic::checkWin(const gomoku_t &gameState) const
+bool GameLogic::checkWin(const gomoku_t &gameState, TILE_STATE tileState) const
 {
     int i = 0;
     int j = 0;
@@ -86,11 +86,11 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     {
         for (int j = 0; j <= gameState.size.y - 5; ++j)
         {
-            if (gameState.map[i][j] == TILE_STATE::ME &&
-                gameState.map[i][j + 1] == TILE_STATE::ME &&
-                gameState.map[i][j + 2] == TILE_STATE::ME &&
-                gameState.map[i][j + 3] == TILE_STATE::ME &&
-                gameState.map[i][j + 4] == TILE_STATE::ME)
+            if (gameState.map[i][j] == tileState &&
+                gameState.map[i][j + 1] == tileState &&
+                gameState.map[i][j + 2] == tileState &&
+                gameState.map[i][j + 3] == tileState &&
+                gameState.map[i][j + 4] == tileState)
             {
                 return true;
             }
@@ -102,11 +102,11 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     {
         for (int j = 0; j < gameState.size.y; ++j)
         {
-            if (gameState.map[i][j] == TILE_STATE::ME &&
-                gameState.map[i + 1][j] == TILE_STATE::ME &&
-                gameState.map[i + 2][j] == TILE_STATE::ME &&
-                gameState.map[i + 3][j] == TILE_STATE::ME &&
-                gameState.map[i + 4][j] == TILE_STATE::ME)
+            if (gameState.map[i][j] == tileState &&
+                gameState.map[i + 1][j] == tileState &&
+                gameState.map[i + 2][j] == tileState &&
+                gameState.map[i + 3][j] == tileState &&
+                gameState.map[i + 4][j] == tileState)
             {
                 return true;
             }
@@ -118,11 +118,11 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     {
         for (int j = 0; j <= gameState.size.y - 5; ++j)
         {
-            if (gameState.map[i][j] == TILE_STATE::ME &&
-                gameState.map[i + 1][j + 1] == TILE_STATE::ME &&
-                gameState.map[i + 2][j + 2] == TILE_STATE::ME &&
-                gameState.map[i + 3][j + 3] == TILE_STATE::ME &&
-                gameState.map[i + 4][j + 4] == TILE_STATE::ME)
+            if (gameState.map[i][j] == tileState &&
+                gameState.map[i + 1][j + 1] == tileState &&
+                gameState.map[i + 2][j + 2] == tileState &&
+                gameState.map[i + 3][j + 3] == tileState &&
+                gameState.map[i + 4][j + 4] == tileState)
             {
                 return true;
             }
@@ -134,11 +134,11 @@ bool GameLogic::checkWin(const gomoku_t &gameState) const
     { // Start from i = 0, not i = 4
         for (int j = 0; j <= gameState.size.y - 5; ++j)
         { // Check columns as well
-            if (gameState.map[i][j] == TILE_STATE::ME &&
-                gameState.map[i + 1][j + 1] == TILE_STATE::ME &&
-                gameState.map[i + 2][j + 2] == TILE_STATE::ME &&
-                gameState.map[i + 3][j + 3] == TILE_STATE::ME &&
-                gameState.map[i + 4][j + 4] == TILE_STATE::ME)
+            if (gameState.map[i][j] == tileState &&
+                gameState.map[i + 1][j + 1] == tileState &&
+                gameState.map[i + 2][j + 2] == tileState &&
+                gameState.map[i + 3][j + 3] == tileState &&
+                gameState.map[i + 4][j + 4] == tileState)
             {
                 return true;
             }
