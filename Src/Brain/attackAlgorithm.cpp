@@ -8,9 +8,9 @@
 #include <iostream>
 #include <ctime>
 #include <unordered_map>
-#include "mcts.hpp"
+#include "attackAlgorithm.hpp"
 
-bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
+bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
 {
     int i = 0;
     int j = 0;
@@ -22,17 +22,14 @@ bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, in
         {
             if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i >= gameState.size.x - 1)
             {
-                std::cout << "is not empty: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
                 for (i = pos.first - 1; i > pos.first - depth && i > 0; i--)
                 {
-                    std::cout << "is not empty: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
                     if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i <= 0)
                     {
                         return false;
                     }
                 }
                 row->positive = false;
-                std::cout << "row->positive is false" << std::endl; //////////////////////////////////////////////
                 break;
             }
         }
@@ -92,7 +89,7 @@ bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, in
     return true;
 }
 
-std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameState, std::vector<RowInfo> rows)
+std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku_t &gameState, std::vector<RowInfo> rows)
 {
     RowInfo bestRow;
     int longestRow = 0;
@@ -102,37 +99,28 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameSta
     {
         for (const auto &row : rows)
         {
-            //std::cout << "row.len: " << row.len << std::endl; //////////////////////////////////////////////
             if (row.len > longestRow)
             {
                 longestRow = row.len;
                 bestRow = row;
             }
         }
-        std::cout << "bestRow.len: " << bestRow.len << std::endl; //////////////////////////////
-        std::cout << "bestRow.startPos: " << bestRow.startPos.first << ", " << bestRow.startPos.second << std::endl; //////////////////////////////
-        std::cout << "bestRow.endPos: " << bestRow.endPos.first << ", " << bestRow.endPos.second << std::endl;       //////////////////////////////
-        //std::cout << "bestRow.direction: " << (int)bestRow.direction << std::endl; //////////////////////////////////////////////
+
         int depth = (5 - bestRow.len);
         if (canWin(gameState, &bestRow, bestRow.startPos, depth))
         {
-            std::cout << "startPos canWin" << std::endl; //////////////////////////////////////////////
             lastMove = bestRow.startPos;
         }
         else if (canWin(gameState, &bestRow, bestRow.endPos, depth))
         {
-            std::cout << "endPos canWin" << std::endl; //////////////////////////////////////////////
             lastMove = bestRow.endPos;
         }
         else
         {
-            // I need it to try every other direction before moving on to the next one
             rows.erase(rows.begin() + i);
             i++;
             continue;
         }
-        std::cout << "lastMove: " << lastMove.first << ", " << lastMove.second << std::endl; //////////////////////////////
-        std::cout << "bestRow.positive: " << bestRow.positive << std::endl; //////////////////////////////////////////////
         std::pair<int, int> bestMove;
         switch (bestRow.direction)
         {
@@ -182,7 +170,7 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameSta
     return {};
 }
 
-std::vector<std::pair<int, int>> MCTS::getAvailableMoves(const gomoku_t &gameState)
+std::vector<std::pair<int, int>> AttackAlgorithm::getAvailableMoves(const gomoku_t &gameState)
 {
     int i = 0;
     int j = 0;
@@ -202,7 +190,7 @@ std::vector<std::pair<int, int>> MCTS::getAvailableMoves(const gomoku_t &gameSta
     return moves;
 }
 
-std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
+std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
 {
     std::vector<RowInfo> rows;
 
@@ -220,17 +208,22 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                     startPos = {j, i};
                 }
                 count++;
-            } else if (gameState.map[i][j] == TILE_STATE::PLAYER2) {
-                for (int l = 0; l < 5 - count; l++) {
-                    if (startPos.first - l <= 0 || gameState.map[i][startPos.first - l] == TILE_STATE::PLAYER2) {
-                        count = 0;
-                        break;
+            }
+            else
+            {
+                if (gameState.map[i][j] == TILE_STATE::PLAYER2)
+                {
+                    for (int l = 0; l < 5 - count; l++)
+                    {
+                        if (startPos.first - l <= 0 || gameState.map[i][startPos.first - l] == TILE_STATE::PLAYER2)
+                        {
+                            count = 0;
+                            break;
+                        }
                     }
                 }
-            }else {
                 if (count > 0)
                 {
-                    std::cout << "count horizontal: " << count << std::endl; ///////////////////////////////////////////////
                     RowInfo rowInfo;
                     rowInfo.len = count;
                     rowInfo.direction = Direction::HORIZONTAL;
@@ -264,19 +257,22 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                     startPos = {j, i};
                 }
                 count++;
-            } else if (gameState.map[i][j] == TILE_STATE::PLAYER2) {
-                for (int l = 0; l < 5 - count; l++) {
-                    if (startPos.second - l <= 0 || gameState.map[startPos.second - l][j] == TILE_STATE::PLAYER2) {
-                        count = 0;
-                        break;
-                    }
-                }
             }
             else
             {
+                if (gameState.map[i][j] == TILE_STATE::PLAYER2)
+                {
+                    for (int l = 0; l < 5 - count; l++)
+                    {
+                        if (startPos.second - l <= 0 || gameState.map[startPos.second - l][j] == TILE_STATE::PLAYER2)
+                        {
+                            count = 0;
+                            break;
+                        }
+                    }
+                }
                 if (count > 0)
                 {
-                   std::cout << "count vertical: " << count << std::endl; ///////////////////////////////////////////////
                     RowInfo rowInfo;
                     rowInfo.len = count;
                     rowInfo.direction = Direction::VERTICAL;
@@ -312,19 +308,22 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                         startPos = {j, i};
                     }
                     count++;
-                } else if (gameState.map[i + k][j + k] == TILE_STATE::PLAYER2) {
-                    for (int l = 0; l < 5 - count; l++) {
-                        if (startPos.first - l <= 0 || startPos.second - l <= 0 || gameState.map[startPos.second - l][startPos.first - l] == TILE_STATE::PLAYER2) {
-                            count = 0;
-                            break;
-                        }
-                    }
                 }
                 else
                 {
+                    if (gameState.map[i + k][j + k] == TILE_STATE::PLAYER2)
+                    {
+                        for (int l = 0; l < 5 - count; l++)
+                        {
+                            if (startPos.first - l <= 0 || startPos.second - l <= 0 || gameState.map[startPos.second - l][startPos.first - l] == TILE_STATE::PLAYER2)
+                            {
+                                count = 0;
+                                break;
+                            }
+                        }
+                    }
                     if (count > 0)
                     {
-                        std::cout << "count left diagonal: " << count << std::endl; ///////////////////////////////////////////////
                         RowInfo rowInfo;
                         rowInfo.len = count;
                         rowInfo.direction = Direction::LEFT_DIAGONAL;
@@ -348,7 +347,6 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
     // Anti-diagonal Check (top-right to bottom-left)
     for (int i = 0; i <= gameState.size.y; i++)
     {
-        // std::cout << "right diagonal" << std::endl; ///////////////////////////////////////////////
         for (int j = -1; j < gameState.size.x; j++)
         {
             int count = 0;
@@ -362,19 +360,22 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                         startPos = {j, i};
                     }
                     count++;
-                } else if (gameState.map[i + k][j - k] == TILE_STATE::PLAYER2) {
-                    for (int l = 0; l < 5 - count; l++) {
-                        if (startPos.first + l >= gameState.size.x || startPos.second - l <= 0 || gameState.map[startPos.second - l][startPos.first + l] == TILE_STATE::PLAYER2) {
-                            count = 0;
-                            break;
-                        }
-                    }
                 }
                 else
                 {
+                    if (gameState.map[i + k][j - k] == TILE_STATE::PLAYER2)
+                    {
+                        for (int l = 0; l < 5 - count; l++)
+                        {
+                            if (startPos.first + l >= gameState.size.x || startPos.second - l <= 0 || gameState.map[startPos.second - l][startPos.first + l] == TILE_STATE::PLAYER2)
+                            {
+                                count = 0;
+                                break;
+                            }
+                        }
+                    }
                     if (count > 0)
                     {
-                        //std::cout << "count right diagonal: " << count << std::endl; ///////////////////////////////////////////////
                         RowInfo rowInfo;
                         rowInfo.len = count;
                         rowInfo.direction = Direction::RIGHT_DIAGONAL;
@@ -398,7 +399,7 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
     return rows;
 }
 
-std::unordered_map<int, std::pair<int, int>> MCTS::getBestMoveInfo(gomoku_t &game)
+std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMoveInfo(gomoku_t &game)
 {
     std::unordered_map<int, std::pair<int, int>> bestMoveInfo;
     std::vector<RowInfo> rows = getRows(game);
@@ -406,7 +407,6 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMoveInfo(gomoku_t &gam
     srand((unsigned)time(0));
     if (rows.empty())
     {
-        std::cout << "rows is empty" << std::endl; ///////////////////////////////////////////////
         std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
         return {{3, availableMoves[rand() % availableMoves.size()]}};
     }

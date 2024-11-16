@@ -10,8 +10,8 @@
 
 void Brain::getBestAttackMove(gomoku_t *game)
 {
-  MCTS mcts(*game);
-  std::unordered_map<int, std::pair<int, int>> bestMoveInfo = mcts.getBestMoveInfo(*game);
+  AttackAlgorithm attackAlgorithm(*game);
+  std::unordered_map<int, std::pair<int, int>> bestMoveInfo = attackAlgorithm.getBestMoveInfo(*game);
   if (!bestMoveInfo.empty())
   {
     int depth = bestMoveInfo.begin()->first;

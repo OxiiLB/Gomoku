@@ -13,9 +13,7 @@ FILE		=	command.cpp				\
 				defenseAlgorithm.cpp	\
 				log.cpp					\
 				Brain/brain.cpp	\
-				Brain/game_logic.cpp	\
-				Brain/mcts.cpp	\
-				Brain/node.cpp	\
+				Brain/attackAlgorithm.cpp	\
 
 TEST		=	test.cpp
 

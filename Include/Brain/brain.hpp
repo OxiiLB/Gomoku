@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "mcts.hpp"
 #include "struct.hpp"
+#include "attackAlgorithm.hpp"
 
 class Brain {
 public:

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** Gomoku
 ** File description:
-** mcts
+** attack algorithm
 */
 
 #pragma once
@@ -10,8 +10,8 @@
 #include <random>
 #include <chrono>
 #include <unordered_map>
-#include "node.hpp"
-#include "game_logic.hpp"
+#include "enum.hpp"
+#include "struct.hpp"
 
 enum class Direction {
     HORIZONTAL,
@@ -28,10 +28,10 @@ struct RowInfo {
     std::pair<int, int> endPos;
 };
 
-class MCTS {
+class AttackAlgorithm {
     public:
-        MCTS(const gomoku_t &game) {}
-        ~MCTS() {}
+        AttackAlgorithm(const gomoku_t &game) {}
+        ~AttackAlgorithm() {}
 
         std::vector<RowInfo> getRows(gomoku_t &game);
         std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &game);
