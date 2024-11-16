@@ -10,73 +10,81 @@
 #include <unordered_map>
 #include "mcts.hpp"
 
-bool MCTS::canWin(gomoku_t &gameState, RowInfo row, std::pair<int, int> pos, int depth)
+bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
 {
     int i = 0;
     int j = 0;
-    switch (row.direction)
+    depth += 1;
+    switch (row->direction)
     {
     case Direction::HORIZONTAL:
-        for (i = pos.first; i < pos.first + depth && i < gameState.size.x; i++)
+        for (i = pos.first + 1; i < pos.first + depth && i < gameState.size.x; i++)
         {
-            if (gameState.map[i][pos.second] != TILE_STATE::EMPTY)
+            std::cout << "checking: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
+            if (gameState.map[pos.second][i] != TILE_STATE::EMPTY)
             {
-                for (i = pos.first; i > pos.first - depth && i > 0; i--)
+                std::cout << "is not empty: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
+                for (i = pos.first - 1; i > pos.first - depth && i > 0; i--)
                 {
-                    if (gameState.map[i][pos.second] != TILE_STATE::EMPTY)
+                    if (gameState.map[pos.second][i] != TILE_STATE::EMPTY)
                     {
                         return false;
                     }
                 }
-                row.positive = false;
+                row->positive = false;
+                std::cout << "row->positive is false" << std::endl; //////////////////////////////////////////////
+                break;
             }
         }
         break;
     case Direction::VERTICAL:
-        for (j = pos.second; j < pos.second + depth && j < gameState.size.y; j++)
+        for (j = pos.second + 1; j < pos.second + depth && j < gameState.size.y; j++)
         {
-            if (gameState.map[pos.first][j] != TILE_STATE::EMPTY)
+            if (gameState.map[j][pos.first] != TILE_STATE::EMPTY)
             {
-                for (j = pos.second; j > pos.second - depth && j > 0; j--)
+                for (j = pos.second - 1; j > pos.second - depth && j > 0; j--)
                 {
-                    if (gameState.map[pos.first][j] != TILE_STATE::EMPTY)
+                    if (gameState.map[j][pos.first] != TILE_STATE::EMPTY)
                     {
                         return false;
                     }
                 }
-                row.positive = false;
+                row->positive = false;
+                break;
             }
         }
         break;
     case Direction::LEFT_DIAGONAL:
-        for (i = pos.first, j = pos.second; i < pos.first + depth && i < gameState.size.x && j < pos.second + depth && j < gameState.size.y; i++, j++)
+        for (i = pos.first + 1, j = pos.second + 1; i < pos.first + depth && i < gameState.size.x && j < pos.second + depth && j < gameState.size.y; i++, j++)
         {
-            if (gameState.map[i][j] != TILE_STATE::EMPTY)
+            if (gameState.map[j][i] != TILE_STATE::EMPTY)
             {
-                for (i = pos.first, j = pos.second; i > pos.first - depth && i > 0 && j > pos.second - depth && j > 0; i--, j--)
+                for (i = pos.first - 1, j = pos.second - 1; i > pos.first - depth && i > 0 && j > pos.second - depth && j > 0; i--, j--)
                 {
-                    if (gameState.map[i][j] != TILE_STATE::EMPTY)
+                    if (gameState.map[j][i] != TILE_STATE::EMPTY)
                     {
                         return false;
                     }
                 }
-                row.positive = false;
+                row->positive = false;
+                break;
             }
         }
         break;
     case Direction::RIGHT_DIAGONAL:
-        for (i = pos.first, j = pos.second; i > pos.first - depth && i > 0 && j < gameState.size.y && j < pos.second + depth; i--, j++)
+        for (i = pos.first - 1, j = pos.second + 1; i > pos.first - depth && i > 0 && j < gameState.size.y && j < pos.second + depth; i--, j++)
         {
-            if (gameState.map[i][j] != TILE_STATE::EMPTY)
+            if (gameState.map[j][i] != TILE_STATE::EMPTY)
             {
-                for (i = pos.first, j = pos.second; i < pos.first + depth && i < gameState.size.x && j > pos.second - depth && j > 0; i++, j--)
+                for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && i < gameState.size.x && j > pos.second - depth && j > 0; i++, j--)
                 {
-                    if (gameState.map[i][j] != TILE_STATE::EMPTY)
+                    if (gameState.map[j][i] != TILE_STATE::EMPTY)
                     {
                         return false;
                     }
                 }
-                row.positive = false;
+                row->positive = false;
+                break;
             }
         }
         break;
@@ -94,23 +102,26 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameSta
     {
         for (const auto &row : rows)
         {
-            std::cout << "row.len: " << row.len << std::endl; //////////////////////////////////////////////
+            //std::cout << "row.len: " << row.len << std::endl; //////////////////////////////////////////////
             if (row.len > longestRow)
             {
                 longestRow = row.len;
                 bestRow = row;
             }
         }
-        std::cout << "bestRow.len: " << bestRow.len << std::endl;       //////////////////////////////
+        std::cout << "bestRow.len: " << bestRow.len << std::endl; //////////////////////////////
         std::cout << "bestRow.startPos: " << bestRow.startPos.first << ", " << bestRow.startPos.second << std::endl; //////////////////////////////
         std::cout << "bestRow.endPos: " << bestRow.endPos.first << ", " << bestRow.endPos.second << std::endl;       //////////////////////////////
+        std::cout << "bestRow.direction: " << (int)bestRow.direction << std::endl; //////////////////////////////////////////////
         int depth = (5 - bestRow.len);
-        if (canWin(gameState, bestRow, bestRow.startPos, depth))
+        if (canWin(gameState, &bestRow, bestRow.startPos, depth))
         {
+            std::cout << "startPos canWin" << std::endl; //////////////////////////////////////////////
             lastMove = bestRow.startPos;
         }
-        else if (canWin(gameState, bestRow, bestRow.endPos, depth))
+        else if (canWin(gameState, &bestRow, bestRow.endPos, depth))
         {
+            std::cout << "endPos canWin" << std::endl; //////////////////////////////////////////////
             lastMove = bestRow.endPos;
         }
         else
@@ -121,6 +132,7 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameSta
             continue;
         }
         std::cout << "lastMove: " << lastMove.first << ", " << lastMove.second << std::endl; //////////////////////////////
+        std::cout << "bestRow.positive: " << bestRow.positive << std::endl; //////////////////////////////////////////////
         std::pair<int, int> bestMove;
         switch (bestRow.direction)
         {
@@ -209,8 +221,8 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                     startPos = {j, i};
                 }
                 count++;
-                std::cout << "count: " << count << std::endl; ///////////////////////////////////////////////
-                std::cout << "pos: " << j << ", " << i << std::endl; ///////////////////////////////////////////////
+                //std::cout << "count: " << count << std::endl; ///////////////////////////////////////////////
+                //std::cout << "pos: " << j << ", " << i << std::endl; ///////////////////////////////////////////////
             } else {
                 if (count > 0)
                 {
@@ -367,7 +379,7 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMoveInfo(gomoku_t &gam
     srand((unsigned)time(0));
     if (rows.empty())
     {
-        // std::cout << "rows is empty" << std::endl; ///////////////////////////////////////////////
+        std::cout << "rows is empty" << std::endl; ///////////////////////////////////////////////
         std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
         return {{3, availableMoves[rand() % availableMoves.size()]}};
     }
