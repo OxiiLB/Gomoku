@@ -13,6 +13,6 @@
 class Brain {
 public:
     Brain() {}
-    // ~Brain() {}
+
     void getBestAttackMove(gomoku_t *game);
 };

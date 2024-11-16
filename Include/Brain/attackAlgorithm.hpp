@@ -2,16 +2,17 @@
 ** EPITECH PROJECT, 2024
 ** Gomoku
 ** File description:
-** attack algorithm
+** Attack algorithm
 */
 
 #pragma once
 
 #include <random>
 #include <chrono>
+#include <ctime>
 #include <unordered_map>
-#include "enum.hpp"
 #include "struct.hpp"
+#include "enum.hpp"
 
 enum class Direction {
     HORIZONTAL,
