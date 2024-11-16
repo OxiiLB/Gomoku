@@ -20,13 +20,13 @@ bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, in
     case Direction::HORIZONTAL:
         for (i = pos.first + 1; i < pos.first + depth && i < gameState.size.x; i++)
         {
-            std::cout << "checking: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
-            if (gameState.map[pos.second][i] != TILE_STATE::EMPTY)
+            if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i >= gameState.size.x - 1)
             {
                 std::cout << "is not empty: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
                 for (i = pos.first - 1; i > pos.first - depth && i > 0; i--)
                 {
-                    if (gameState.map[pos.second][i] != TILE_STATE::EMPTY)
+                    std::cout << "is not empty: " << i << ", " << pos.second << std::endl; //////////////////////////////////////////////
+                    if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i <= 0)
                     {
                         return false;
                     }
@@ -40,11 +40,11 @@ bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, in
     case Direction::VERTICAL:
         for (j = pos.second + 1; j < pos.second + depth && j < gameState.size.y; j++)
         {
-            if (gameState.map[j][pos.first] != TILE_STATE::EMPTY)
+            if (gameState.map[j][pos.first] != TILE_STATE::EMPTY || j >= gameState.size.y - 1)
             {
                 for (j = pos.second - 1; j > pos.second - depth && j > 0; j--)
                 {
-                    if (gameState.map[j][pos.first] != TILE_STATE::EMPTY)
+                    if (gameState.map[j][pos.first] != TILE_STATE::EMPTY || j <= 0)
                     {
                         return false;
                     }
@@ -57,11 +57,11 @@ bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, in
     case Direction::LEFT_DIAGONAL:
         for (i = pos.first + 1, j = pos.second + 1; i < pos.first + depth && i < gameState.size.x && j < pos.second + depth && j < gameState.size.y; i++, j++)
         {
-            if (gameState.map[j][i] != TILE_STATE::EMPTY)
+            if (gameState.map[j][i] != TILE_STATE::EMPTY || i >= gameState.size.x - 1 || j >= gameState.size.y - 1)
             {
                 for (i = pos.first - 1, j = pos.second - 1; i > pos.first - depth && i > 0 && j > pos.second - depth && j > 0; i--, j--)
                 {
-                    if (gameState.map[j][i] != TILE_STATE::EMPTY)
+                    if (gameState.map[j][i] != TILE_STATE::EMPTY || i <= 0 || j <= 0)
                     {
                         return false;
                     }
@@ -74,11 +74,11 @@ bool MCTS::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, in
     case Direction::RIGHT_DIAGONAL:
         for (i = pos.first - 1, j = pos.second + 1; i > pos.first - depth && i > 0 && j < gameState.size.y && j < pos.second + depth; i--, j++)
         {
-            if (gameState.map[j][i] != TILE_STATE::EMPTY)
+            if (gameState.map[j][i] != TILE_STATE::EMPTY || i <= 0 || j >= gameState.size.y - 1)
             {
                 for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && i < gameState.size.x && j > pos.second - depth && j > 0; i++, j--)
                 {
-                    if (gameState.map[j][i] != TILE_STATE::EMPTY)
+                    if (gameState.map[j][i] != TILE_STATE::EMPTY || i >= gameState.size.x - 1 || j <= 0)
                     {
                         return false;
                     }
@@ -112,7 +112,7 @@ std::unordered_map<int, std::pair<int, int>> MCTS::getBestMove(gomoku_t &gameSta
         std::cout << "bestRow.len: " << bestRow.len << std::endl; //////////////////////////////
         std::cout << "bestRow.startPos: " << bestRow.startPos.first << ", " << bestRow.startPos.second << std::endl; //////////////////////////////
         std::cout << "bestRow.endPos: " << bestRow.endPos.first << ", " << bestRow.endPos.second << std::endl;       //////////////////////////////
-        std::cout << "bestRow.direction: " << (int)bestRow.direction << std::endl; //////////////////////////////////////////////
+        //std::cout << "bestRow.direction: " << (int)bestRow.direction << std::endl; //////////////////////////////////////////////
         int depth = (5 - bestRow.len);
         if (canWin(gameState, &bestRow, bestRow.startPos, depth))
         {
@@ -209,7 +209,6 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
     // Horizontal Check
     for (int i = 0; i < gameState.size.y; i++)
     {
-        // std::cout << "horizontal" << std::endl; ///////////////////////////////////////////////
         int count = 0;
         std::pair<int, int> startPos;
         for (int j = 0; j < gameState.size.x; j++)
@@ -221,11 +220,17 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                     startPos = {j, i};
                 }
                 count++;
-                //std::cout << "count: " << count << std::endl; ///////////////////////////////////////////////
-                //std::cout << "pos: " << j << ", " << i << std::endl; ///////////////////////////////////////////////
-            } else {
+            } else if (gameState.map[i][j] == TILE_STATE::PLAYER2) {
+                for (int l = 0; l < 5 - count; l++) {
+                    if (startPos.first - l <= 0 || gameState.map[i][startPos.first - l] == TILE_STATE::PLAYER2) {
+                        count = 0;
+                        break;
+                    }
+                }
+            }else {
                 if (count > 0)
                 {
+                    std::cout << "count horizontal: " << count << std::endl; ///////////////////////////////////////////////
                     RowInfo rowInfo;
                     rowInfo.len = count;
                     rowInfo.direction = Direction::HORIZONTAL;
@@ -248,7 +253,6 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
     // Vertical Check
     for (int j = 0; j < gameState.size.y; j++)
     {
-        // std::cout << "vertical" << std::endl; ///////////////////////////////////////////////
         int count = 0;
         std::pair<int, int> startPos;
         for (int i = 0; i < gameState.size.x; i++)
@@ -260,11 +264,19 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                     startPos = {j, i};
                 }
                 count++;
+            } else if (gameState.map[i][j] == TILE_STATE::PLAYER2) {
+                for (int l = 0; l < 5 - count; l++) {
+                    if (startPos.second - l <= 0 || gameState.map[startPos.second - l][j] == TILE_STATE::PLAYER2) {
+                        count = 0;
+                        break;
+                    }
+                }
             }
             else
             {
                 if (count > 0)
                 {
+                   std::cout << "count vertical: " << count << std::endl; ///////////////////////////////////////////////
                     RowInfo rowInfo;
                     rowInfo.len = count;
                     rowInfo.direction = Direction::VERTICAL;
@@ -287,7 +299,6 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
     // Diagonal Check (top-left to bottom-right)
     for (int i = 0; i <= gameState.size.y; i++)
     {
-        // std::cout << "left diagonal" << std::endl; ///////////////////////////////////////////////
         for (int j = 0; j <= gameState.size.x; j++)
         {
             int count = 0;
@@ -301,11 +312,19 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                         startPos = {j, i};
                     }
                     count++;
+                } else if (gameState.map[i + k][j + k] == TILE_STATE::PLAYER2) {
+                    for (int l = 0; l < 5 - count; l++) {
+                        if (startPos.first - l <= 0 || startPos.second - l <= 0 || gameState.map[startPos.second - l][startPos.first - l] == TILE_STATE::PLAYER2) {
+                            count = 0;
+                            break;
+                        }
+                    }
                 }
                 else
                 {
                     if (count > 0)
                     {
+                        std::cout << "count left diagonal: " << count << std::endl; ///////////////////////////////////////////////
                         RowInfo rowInfo;
                         rowInfo.len = count;
                         rowInfo.direction = Direction::LEFT_DIAGONAL;
@@ -343,11 +362,19 @@ std::vector<RowInfo> MCTS::getRows(gomoku_t &gameState)
                         startPos = {j, i};
                     }
                     count++;
+                } else if (gameState.map[i + k][j - k] == TILE_STATE::PLAYER2) {
+                    for (int l = 0; l < 5 - count; l++) {
+                        if (startPos.first + l >= gameState.size.x || startPos.second - l <= 0 || gameState.map[startPos.second - l][startPos.first + l] == TILE_STATE::PLAYER2) {
+                            count = 0;
+                            break;
+                        }
+                    }
                 }
                 else
                 {
                     if (count > 0)
                     {
+                        //std::cout << "count right diagonal: " << count << std::endl; ///////////////////////////////////////////////
                         RowInfo rowInfo;
                         rowInfo.len = count;
                         rowInfo.direction = Direction::RIGHT_DIAGONAL;
