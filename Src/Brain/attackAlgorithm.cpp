@@ -21,7 +21,7 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         case Direction::HORIZONTAL:
             for (i = pos.first + 1; i < pos.first + depth && i < sizeX; i++) {
                 if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i >= sizeX - 1) {
-                    for (i = pos.first - 1; i > pos.first - depth && i > 0; i--) {
+                    for (i = pos.first - 1; i > pos.first - depth; i--) {
                         if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i <= 0) {
                             return false;
                         }
@@ -34,7 +34,7 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         case Direction::VERTICAL:
             for (j = pos.second + 1; j < pos.second + depth && j < sizeY; j++) {
                 if (gameState.map[j][pos.first] != TILE_STATE::EMPTY || j >= sizeY - 1) {
-                    for (j = pos.second - 1; j > pos.second - depth && j > 0; j--) {
+                    for (j = pos.second - 1; j > pos.second - depth; j--) {
                         if (gameState.map[j][pos.first] != TILE_STATE::EMPTY || j <= 0) {
                             return false;
                         }
@@ -47,7 +47,7 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         case Direction::LEFT_DIAGONAL:
             for (i = pos.first + 1, j = pos.second + 1; i < pos.first + depth && i < sizeX && j < pos.second + depth && j < sizeY; i++, j++) {
                 if (gameState.map[j][i] != TILE_STATE::EMPTY || i >= sizeX - 1 || j >= sizeY - 1) {
-                    for (i = pos.first - 1, j = pos.second - 1; i > pos.first - depth && i > 0 && j > pos.second - depth && j > 0; i--, j--) {
+                    for (i = pos.first - 1, j = pos.second - 1; i > pos.first - depth && j > pos.second - depth; i--, j--) {
                         if (gameState.map[j][i] != TILE_STATE::EMPTY || i <= 0 || j <= 0) {
                             return false;
                         }
@@ -60,7 +60,7 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         case Direction::RIGHT_DIAGONAL:
             for (i = pos.first - 1, j = pos.second + 1; i > pos.first - depth && i > 0 && j < sizeY && j < pos.second + depth; i--, j++) {
                 if (gameState.map[j][i] != TILE_STATE::EMPTY || i <= 0 || j >= sizeY - 1) {
-                    for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && i < sizeX && j > pos.second - depth && j > 0; i++, j--) {
+                    for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && j > pos.second - depth; i++, j--) {
                         if (gameState.map[j][i] != TILE_STATE::EMPTY || i >= sizeX - 1 || j <= 0) {
                             return false;
                         }
