@@ -338,5 +338,13 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMoveInfo(go
         std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
         return {{3, availableMoves[rand() % availableMoves.size()]}};
     }
-    return (getBestMove(game, rows));
+
+    bestMoveInfo = getBestMove(game, rows);
+
+    if (bestMoveInfo.empty()) {
+        std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
+        return {{3, availableMoves[rand() % availableMoves.size()]}};
+    }
+
+    return bestMoveInfo;
 }
