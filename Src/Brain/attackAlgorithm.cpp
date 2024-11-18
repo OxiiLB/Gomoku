@@ -20,9 +20,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
     switch (row->direction) {
         case Direction::HORIZONTAL:
             for (i = pos.first + 1; i < pos.first + depth; i++) {
-                if (i >= sizeX - 1 || gameState.map[pos.second][i] != TILE_STATE::EMPTY) {
+                if (i > sizeX - 1 || gameState.map[pos.second][i] != TILE_STATE::EMPTY) {
                     for (i = pos.first - 1; i > pos.first - depth; i--) {
-                        if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i <= 0) {
+                        if (i < 0 || gameState.map[pos.second][i] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -33,9 +33,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         break;
         case Direction::VERTICAL:
             for (j = pos.second + 1; j < pos.second + depth; j++) {
-                if (j >= sizeY - 1 || gameState.map[j][pos.first] != TILE_STATE::EMPTY) {
+                if (j > sizeY - 1 || gameState.map[j][pos.first] != TILE_STATE::EMPTY) {
                     for (j = pos.second - 1; j > pos.second - depth; j--) {
-                        if (gameState.map[j][pos.first] != TILE_STATE::EMPTY || j <= 0) {
+                        if (j < 0 || gameState.map[j][pos.first] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -46,9 +46,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         break;
         case Direction::LEFT_DIAGONAL:
             for (i = pos.first + 1, j = pos.second + 1; i < pos.first + depth && j < pos.second + depth; i++, j++) {
-                if (i >= sizeX - 1 || j >= sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
+                if (i > sizeX - 1 || j > sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                     for (i = pos.first - 1, j = pos.second - 1; i > pos.first - depth && j > pos.second - depth; i--, j--) {
-                        if (gameState.map[j][i] != TILE_STATE::EMPTY || i <= 0 || j <= 0) {
+                        if (i < 0 || j < 0 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -59,9 +59,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         break;
         case Direction::RIGHT_DIAGONAL:
             for (i = pos.first - 1, j = pos.second + 1; i > pos.first - depth && j < pos.second + depth; i--, j++) {
-                if (i <= 0 || j >= sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
+                if (i < 0 || j > sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                     for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && j > pos.second - depth; i++, j--) {
-                        if (gameState.map[j][i] != TILE_STATE::EMPTY || i >= sizeX - 1 || j <= 0) {
+                        if (i > sizeX - 1 || j < 0 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -86,6 +86,7 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
         i++;
         int longestRow = 0;
         for (auto &row : rows) {
+            // std::cout << "row.direction: " << (int)row.direction << std::endl; ///////////////////////
             if (row.len > longestRow) {
                 longestRow = row.len;
                 bestRow = row;
@@ -94,11 +95,18 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
 
         depth = (5 - bestRow.len);
 
+        //std::cout << "bestRow.startPos: " << bestRow.startPos.first << " " << bestRow.startPos.second << std::endl; ///////////////////////
+        //std::cout << "bestRow.endPos: " << bestRow.endPos.first << " " << bestRow.endPos.second << std::endl; ///////////////////////
+        //std::cout << "bestRow.direction: " << (int)bestRow.direction << std::endl; ///////////////////////
+
         if (canWin(gameState, &bestRow, bestRow.startPos, depth)) {
             lastMove = bestRow.startPos;
         } else if (canWin(gameState, &bestRow, bestRow.endPos, depth)) {
             lastMove = bestRow.endPos;
         } else {
+            std::cout << "bestRow.startPos cant win: " << bestRow.startPos.first << " " << bestRow.startPos.second << std::endl; ///////////////////////
+            std::cout << "bestRow.endPos cant win: " << bestRow.endPos.first << " " << bestRow.endPos.second << std::endl; ///////////////////////
+            std::cout << "bestRow.direction cant win: " << (int)bestRow.direction << std::endl; ///////////////////////
             rows.erase(rows.begin() + i);
             continue;
         }
@@ -336,14 +344,14 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMoveInfo(go
 
     if (rows.empty()) {
         std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
-        return {{3, availableMoves[rand() % availableMoves.size()]}};
+        return {{5, availableMoves[rand() % availableMoves.size()]}};
     }
 
     bestMoveInfo = getBestMove(game, rows);
 
     if (bestMoveInfo.empty()) {
         std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
-        return {{3, availableMoves[rand() % availableMoves.size()]}};
+        return {{5, availableMoves[rand() % availableMoves.size()]}};
     }
 
     return bestMoveInfo;
