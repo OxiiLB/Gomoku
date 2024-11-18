@@ -43,6 +43,9 @@ void Log::printCommandError(COMMANDS command)
   case COMMANDS::PLAY:
     message = "ERROR message - unsupported size or other error";
     break;
+  case COMMANDS::SWAP2BOARD:
+    message = "ERROR message - unsupported size or other error";
+    break;
   default:
     break;
   }

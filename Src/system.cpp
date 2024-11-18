@@ -16,7 +16,8 @@
 
 std::ostream &operator<<(std::ostream &os, TILE_STATE &entry)
 {
-  switch (entry) {
+  switch (entry)
+  {
   case TILE_STATE::EMPTY:
     os << "X";
     break;
@@ -48,6 +49,7 @@ void System::initiateStruct(gomoku_t *_game)
   _game->opponent.x = 0;
   _game->opponent.y = 0;
   _game->map.resize(0);
+  _game->initialMoves.resize(0);
   _game->global_info.timeout_turn = std::chrono::milliseconds(0);
   _game->global_info.timeout_match = std::chrono::milliseconds(0);
   _game->global_info.max_memory = 0;
@@ -65,16 +67,20 @@ std::vector<std::string> System::splitString(const std::string &str)
   std::istringstream iss(str);
   std::vector<std::string> result;
   std::string word;
-  while (std::getline(iss, word, ' ')) {
+  while (std::getline(iss, word, ' '))
+  {
     std::istringstream subiss(word);
     std::string subword;
-    while (std::getline(subiss, subword, ',')) {
+    while (std::getline(subiss, subword, ','))
+    {
       subword.erase(
           std::remove_if(subword.begin(),
                          subword.end(),
-                         [](unsigned char c) { return std::isspace(c); }),
+                         [](unsigned char c)
+                         { return std::isspace(c); }),
           subword.end());
-      if (!subword.empty()) {
+      if (!subword.empty())
+      {
         result.push_back(subword);
       }
     }
@@ -111,6 +117,8 @@ void System::command(gomoku_t *_game,
     command.takeBack(_game, entry);
   else if (_game->state == GAME_STATE::PLAY && entry.front() == "PLAY")
     command.play(_game, entry);
+  else if (_game->state == GAME_STATE::PLAY && entry.front() == "SWAP2BOARD")
+    command.swap2Board(this, _game);
 }
 
 void System::gameLoop()
@@ -121,14 +129,16 @@ void System::gameLoop()
   _brain = Brain();
   _defense = defenseAlgorithm();
 
-  auto moveResponse = [this](int x, int y) {
+  auto moveResponse = [this](int x, int y)
+  {
     _game.map[y][x] = TILE_STATE::ME;
     _game.me.x = x;
     _game.me.y = y;
     std::cout << x << "," << y << std::endl;
   };
 
-  while (isRunning) {
+  while (isRunning)
+  {
     std::string line;
     std::getline(std::cin, line);
     if (line.empty())
@@ -137,9 +147,12 @@ void System::gameLoop()
 
     command(&_game, entry, &isRunning);
 
-    if (_game.state == GAME_STATE::PLAY && isRunning) {
-      if (_game.my_turn) {
-        std::thread bgThread([&]() { _defense.executeDefense(&_game); });
+    if (_game.state == GAME_STATE::PLAY && isRunning)
+    {
+      if (_game.my_turn)
+      {
+        std::thread bgThread([&]()
+                             { _defense.executeDefense(&_game); });
         _brain.getBestAttackMove(&_game);
         bool playing = true;
         _game.my_turn = false;
@@ -147,12 +160,14 @@ void System::gameLoop()
         if (bgThread.joinable())
           bgThread.join();
 
-        if (_game.defense.risk_level != 0) {
+        if (_game.defense.risk_level != 0)
+        {
           if (_game.attack.win_level > _game.defense.risk_level)
             moveResponse(_game.attack.best_move.x, _game.attack.best_move.y);
           else
             moveResponse(_game.defense.best_move.x, _game.defense.best_move.y);
-        } else
+        }
+        else
           moveResponse(_game.attack.best_move.x, _game.attack.best_move.y);
       }
       if (_game.god_mode.map)
@@ -169,7 +184,8 @@ void System::displayGame(gomoku_t *_game)
   for (int i = _game->size.y; i > 9; i /= 10)
     space++;
 
-  auto placeSpaceHeight = [](int x, int nbr) {
+  auto placeSpaceHeight = [](int x, int nbr)
+  {
     int remove_space = 0;
     for (int i = nbr; i > 9; i /= 10)
       remove_space++;
@@ -179,11 +195,13 @@ void System::displayGame(gomoku_t *_game)
   };
 
   std::cout << std::endl;
-  for (int i = 0; i < _game->size.y; i++) {
+  for (int i = 0; i < _game->size.y; i++)
+  {
     std::cout << i;
     placeSpaceHeight(space, i);
     std::cout << "| ";
-    for (int j = 0; j < _game->size.x; j++) {
+    for (int j = 0; j < _game->size.x; j++)
+    {
       std::cout << _game->map[i][j] << " ";
     }
     std::cout << std::endl;

@@ -15,6 +15,7 @@ enum class COMMANDS {
   BEGIN,
   RESTART,
   PLAY,
+  SWAP2BOARD,
 };
 
 enum class GAME_STATE {

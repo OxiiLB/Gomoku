@@ -25,4 +25,5 @@ public:
   virtual void godMode(gomoku_t *game, std::vector<std::string> entry) = 0;
   virtual void takeBack(gomoku_t *game, std::vector<std::string> entry) = 0;
   virtual void play(gomoku_t *game, std::vector<std::string> entry) = 0;
+  virtual void swap2Board(ISystem *system, gomoku_t *game)= 0;
 };

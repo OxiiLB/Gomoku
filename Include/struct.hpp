@@ -94,4 +94,5 @@ typedef struct gomoku_s {
   god_mode_t god_mode;
   defenseAlgorithm_t defense;
   attackAlgorithm_t attack;
+  std::vector<coord_t> initialMoves;
 } gomoku_t;
