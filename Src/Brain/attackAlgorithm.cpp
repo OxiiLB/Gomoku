@@ -5,7 +5,6 @@
 ** mcts
 */
 
-#include <iostream> ////////
 #include "attackAlgorithm.hpp"
 
 bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
@@ -86,7 +85,6 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
         i++;
         int longestRow = 0;
         for (auto &row : rows) {
-            // std::cout << "row.direction: " << (int)row.direction << std::endl; ///////////////////////
             if (row.len > longestRow) {
                 longestRow = row.len;
                 bestRow = row;
@@ -95,19 +93,13 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
 
         depth = (5 - bestRow.len);
 
-        //std::cout << "bestRow.startPos: " << bestRow.startPos.first << " " << bestRow.startPos.second << std::endl; ///////////////////////
-        //std::cout << "bestRow.endPos: " << bestRow.endPos.first << " " << bestRow.endPos.second << std::endl; ///////////////////////
-        //std::cout << "bestRow.direction: " << (int)bestRow.direction << std::endl; ///////////////////////
-
         if (canWin(gameState, &bestRow, bestRow.startPos, depth)) {
             lastMove = bestRow.startPos;
         } else if (canWin(gameState, &bestRow, bestRow.endPos, depth)) {
             lastMove = bestRow.endPos;
         } else {
-            std::cout << "bestRow.startPos cant win: " << bestRow.startPos.first << " " << bestRow.startPos.second << std::endl; ///////////////////////
-            std::cout << "bestRow.endPos cant win: " << bestRow.endPos.first << " " << bestRow.endPos.second << std::endl; ///////////////////////
-            std::cout << "bestRow.direction cant win: " << (int)bestRow.direction << std::endl; ///////////////////////
             rows.erase(rows.begin() + i);
+            i = -1;
             continue;
         }
         
