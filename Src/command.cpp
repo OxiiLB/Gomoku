@@ -272,7 +272,6 @@ void Command::swap2Board(ISystem *system, gomoku_t *game)
 {
   bool isRunning = true;
 
-  // Clear any initial moves in game to start fresh
   game->initialMoves.clear();
 
   while (isRunning)
@@ -281,14 +280,12 @@ void Command::swap2Board(ISystem *system, gomoku_t *game)
     std::getline(std::cin, line);
     std::vector<std::string> entry = system->splitString(line);
 
-    // Fin du signal "SWAP2BOARD" en cours, on peut évaluer la situation
     if (entry.size() == 1 && entry[0] == "DONE")
     {
       int numMoves = game->initialMoves.size();
 
       if (numMoves == 0)
       {
-        // Cas 1 : L'IA propose les trois premières pierres
         std::cout << "7,7 8,8 6,8" << std::endl;
         game->initialMoves = {{7, 7}, {8, 8}, {6, 8}};
         game->map[7][7] = TILE_STATE::ME;
@@ -298,8 +295,7 @@ void Command::swap2Board(ISystem *system, gomoku_t *game)
       }
       else if (numMoves == 3)
       {
-        // Cas 2 : Trois pierres sont déjà placées, choix du swap ou d'un 4e coup
-        bool shouldSwap = false; // Logique pour décider du swap
+        bool shouldSwap = false;
 
         if (shouldSwap)
         {
@@ -308,14 +304,13 @@ void Command::swap2Board(ISystem *system, gomoku_t *game)
         else
         {
           std::cout << "8,8" << std::endl;
-          game->initialMoves.push_back({8, 8}); // Ajout de la 4e pierre
+          game->initialMoves.push_back({8, 8});
         }
         isRunning = false;
       }
       else if (numMoves == 5)
       {
-        // Cas 3 : Cinq pierres sont déjà placées, choix du swap ou d'un 6e coup
-        bool shouldSwap = false; // Logique pour décider du swap
+        bool shouldSwap = false;
 
         if (shouldSwap)
         {
@@ -324,12 +319,11 @@ void Command::swap2Board(ISystem *system, gomoku_t *game)
         else
         {
           std::cout << "6,8" << std::endl;
-          game->initialMoves.push_back({6, 8}); // Ajout de la 6e pierre
+          game->initialMoves.push_back({6, 8});
         }
         isRunning = false;
       }
     }
-    // Ajout des coordonnées de coups envoyés par le manager
     else if (entry.size() == 2)
     {
       int x = std::stoi(entry[0]);
