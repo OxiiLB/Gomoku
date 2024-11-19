@@ -5,6 +5,7 @@
 ** brain
 */
 
+#include <iostream>
 #include <unordered_map>
 #include "brain.hpp"
 
@@ -21,9 +22,9 @@ void Brain::getBestAttackMove(gomoku_t *game)
     game->attack.best_move.x = bestMoveInfo.begin()->second.first;
     game->attack.best_move.y = bestMoveInfo.begin()->second.second;
 
-    if (depth == 0) {
+    if (depth == 1) {
       game->attack.win_level = 1001;
-    } else if (depth == 1) {
+    } else if (depth == 2) {
       game->attack.win_level = 101;
     } else {
       game->attack.win_level = 0;
