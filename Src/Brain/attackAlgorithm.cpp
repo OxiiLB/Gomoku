@@ -188,7 +188,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     }
                 }
             }
-            if (count > 0) {
+            if (count > 0 && count < 5) {
                 RowInfo rowInfo;
                 if (gameState.map[i][j] == TILE_STATE::EMPTY) {
                     for (int t = j + 1; t < (j + (5 - count)); t++) {
@@ -235,7 +235,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     }
                 }
             }
-            if (count > 0) {
+            if (count > 0 && count < 5) {
                 RowInfo rowInfo;
                 if (gameState.map[i][j] == TILE_STATE::EMPTY) {
                     for (int t = i + 1; (i + (5 - count)); t++) {
@@ -286,7 +286,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                         }
                     }
                 }
-                if (count > 0) {
+                if (count > 0 && count < 5) {
                     RowInfo rowInfo;
                     if (gameState.map[i + k][j + k] == TILE_STATE::EMPTY) {
                         for (int t = 1; t < (4 - count); t++) {
@@ -339,7 +339,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                         }
                     }
                 }
-                if (count > 0) {
+                if (count > 0 && count < 5) {
                     RowInfo rowInfo;
                     if (gameState.map[i + k][j - k] == TILE_STATE::EMPTY) {
                         for (int t = 1; t < (4 - count); t++) {
