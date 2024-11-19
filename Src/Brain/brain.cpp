@@ -5,7 +5,6 @@
 ** brain
 */
 
-#include <iostream>
 #include <unordered_map>
 #include "brain.hpp"
 
