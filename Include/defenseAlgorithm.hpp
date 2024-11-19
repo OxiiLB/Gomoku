@@ -11,6 +11,7 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include "log.hpp"
 
 class defenseAlgorithm {
 public:

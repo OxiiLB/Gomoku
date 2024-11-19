@@ -49,6 +49,7 @@ bool defenseAlgorithm::canBlockMove(gomoku_t *game, int x, int y)
   }
   if (checkDirection(game, x, y, -1, -1, &pIndex))
   {
+    std::cout << "Check direction up" << std::endl;
     bestMove(game, x, y, -1, -1, pIndex, possibility);
     isPossible = true;
   }
@@ -61,8 +62,8 @@ bool defenseAlgorithm::canBlockMove(gomoku_t *game, int x, int y)
   if (isPossible)
   {
     _possibility.push_back(possibility);
-    std::cout << "Best move: " << possibility.best_move.x << " " << possibility.best_move.y << std::endl;
-    std::cout << "Risk level: " << possibility.risk_level << std::endl;
+    // std::cout << "Best move: " << possibility.best_move.x << " " << possibility.best_move.y << std::endl;
+    // std::cout << "Risk level: " << possibility.risk_level << std::endl;
     possibility.risk_level = 0;
     return true;
   }
@@ -77,16 +78,13 @@ void defenseAlgorithm::bestMove(
 
   int nx = x + dx * bestMoveIdx;
   int ny = y + dy * bestMoveIdx;
-  std::cout << "Actual position: " << x << " " << y << std::endl;
   if (nx >= 0 && nx < game->size.x && ny >= 0 && ny < game->size.y)
   {
     if (game->map[ny][nx] == TILE_STATE::EMPTY)
     {
-      std::cout << "risk before: " << possibility.risk_level << std::endl;
       possibility.best_move.x = nx;
       possibility.best_move.y = ny;
       possibility.risk_level += bestMoveScore;
-      std::cout << "risk after: " << possibility.risk_level << std::endl;
     }
   }
 }
@@ -96,13 +94,16 @@ bool defenseAlgorithm::checkDirection(
 {
   int nbrOfSame = 0;
   int empty = 0;
+  Log log;
   for (int i = 0; i < 5; i++)
   {
     int nx = x + dx * i;
     int ny = y + dy * i;
+    log.writeInFile("nx: " + std::to_string(nx) + " ny: " + std::to_string(ny));
     if (nx < 0 || nx >= game->size.x || ny < 0 || ny >= game->size.y)
     {
       _direction.clear();
+      log.writeInFile("------");
       return false;
     }
 
@@ -112,6 +113,7 @@ bool defenseAlgorithm::checkDirection(
     if (empty == 3)
     {
       _direction.clear();
+      log.writeInFile("------");
       return false;
     }
   }
@@ -120,9 +122,11 @@ bool defenseAlgorithm::checkDirection(
     if (_direction == _pattern[i])
     {
       *pIndex = i;
+      log.writeInFile("------");
       return true;
     }
   }
+  log.writeInFile("------");
   _direction.clear();
   return false;
 }
