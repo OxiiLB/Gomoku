@@ -180,7 +180,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     }
                 }
             }
-            if (count > 0) {
+            if (count > 0 && count < 5) {
                 RowInfo rowInfo;
                 rowInfo.len = count;
                 rowInfo.direction = Direction::HORIZONTAL;
@@ -218,7 +218,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     }
                 }
             }
-            if (count > 0) {
+            if (count > 0 && count < 5) {
                 RowInfo rowInfo;
                 rowInfo.len = count;
                 rowInfo.direction = Direction::VERTICAL;
@@ -260,7 +260,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                         }
                     }
                 }
-                if (count > 0) {
+                if (count > 0 && count < 5) {
                     RowInfo rowInfo;
                     rowInfo.len = count;
                     rowInfo.direction = Direction::LEFT_DIAGONAL;
@@ -304,7 +304,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                         }
                     }
                 }
-                if (count > 0) {
+                if (count > 0 && count < 5) {
                     RowInfo rowInfo;
                     rowInfo.len = count;
                     rowInfo.direction = Direction::RIGHT_DIAGONAL;
