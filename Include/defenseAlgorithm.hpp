@@ -20,13 +20,12 @@ public:
   bool checkDefenseMove(gomoku_t *game);
 
   void executeDefense(gomoku_t *game);
-  void bestMove(gomoku_t *game, int x, int y, int dx, int dy, int pIndex);
+  void bestMove(gomoku_t *game, int x, int y, int dx, int dy, int pIndex, defenseAlgorithm_t &possibility);
 
 private:
   bool canBlockMove(gomoku_t *game, int x, int y);
 
-  bool
-  checkDirection(gomoku_t *game, int x, int y, int dx, int dy, int *pIndex);
+  bool checkDirection(gomoku_t *game, int x, int y, int dx, int dy, int *pIndex);
 
   std::vector<std::vector<TILE_STATE>> _pattern = {
       {TILE_STATE::PLAYER2,
