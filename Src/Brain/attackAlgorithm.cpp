@@ -5,7 +5,6 @@
 ** mcts
 */
 
-#include <iostream> ////////
 #include "attackAlgorithm.hpp"
 
 bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
@@ -20,9 +19,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
     switch (row->direction) {
         case Direction::HORIZONTAL:
             for (i = pos.first + 1; i < pos.first + depth; i++) {
-                if (i >= sizeX - 1 || gameState.map[pos.second][i] != TILE_STATE::EMPTY) {
+                if (i > sizeX - 1 || gameState.map[pos.second][i] != TILE_STATE::EMPTY) {
                     for (i = pos.first - 1; i > pos.first - depth; i--) {
-                        if (gameState.map[pos.second][i] != TILE_STATE::EMPTY || i <= 0) {
+                        if (i < 0 || gameState.map[pos.second][i] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -33,9 +32,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         break;
         case Direction::VERTICAL:
             for (j = pos.second + 1; j < pos.second + depth; j++) {
-                if (j >= sizeY - 1 || gameState.map[j][pos.first] != TILE_STATE::EMPTY) {
+                if (j > sizeY - 1 || gameState.map[j][pos.first] != TILE_STATE::EMPTY) {
                     for (j = pos.second - 1; j > pos.second - depth; j--) {
-                        if (gameState.map[j][pos.first] != TILE_STATE::EMPTY || j <= 0) {
+                        if (j < 0 || gameState.map[j][pos.first] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -46,9 +45,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         break;
         case Direction::LEFT_DIAGONAL:
             for (i = pos.first + 1, j = pos.second + 1; i < pos.first + depth && j < pos.second + depth; i++, j++) {
-                if (i >= sizeX - 1 || j >= sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
+                if (i > sizeX - 1 || j > sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                     for (i = pos.first - 1, j = pos.second - 1; i > pos.first - depth && j > pos.second - depth; i--, j--) {
-                        if (gameState.map[j][i] != TILE_STATE::EMPTY || i <= 0 || j <= 0) {
+                        if (i < 0 || j < 0 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -59,9 +58,9 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
         break;
         case Direction::RIGHT_DIAGONAL:
             for (i = pos.first - 1, j = pos.second + 1; i > pos.first - depth && j < pos.second + depth; i--, j++) {
-                if (i <= 0 || j >= sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
+                if (i < 0 || j > sizeY - 1 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                     for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && j > pos.second - depth; i++, j--) {
-                        if (gameState.map[j][i] != TILE_STATE::EMPTY || i >= sizeX - 1 || j <= 0) {
+                        if (i > sizeX - 1 || j < 0 || gameState.map[j][i] != TILE_STATE::EMPTY) {
                             return false;
                         }
                     }
@@ -100,6 +99,7 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
             lastMove = bestRow.endPos;
         } else {
             rows.erase(rows.begin() + i);
+            i = -1;
             continue;
         }
         
@@ -336,7 +336,15 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMoveInfo(go
 
     if (rows.empty()) {
         std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
-        return {{3, availableMoves[rand() % availableMoves.size()]}};
+        return {{5, availableMoves[rand() % availableMoves.size()]}};
     }
-    return (getBestMove(game, rows));
+
+    bestMoveInfo = getBestMove(game, rows);
+
+    if (bestMoveInfo.empty()) {
+        std::vector<std::pair<int, int>> availableMoves = getAvailableMoves(game);
+        return {{5, availableMoves[rand() % availableMoves.size()]}};
+    }
+
+    return bestMoveInfo;
 }
