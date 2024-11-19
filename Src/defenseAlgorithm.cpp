@@ -37,12 +37,33 @@ bool defenseAlgorithm::canBlockMove(gomoku_t *game, int x, int y)
     bestMove(game, x, y, 1, -1, pIndex, possibility);
     isPossible = true;
   }
+  if (checkDirection(game, x, y, 0, -1, &pIndex))
+  {
+    bestMove(game, x, y, 0, -1, pIndex, possibility);
+    isPossible = true;
+  }
+  if (checkDirection(game, x, y, -1, 0, &pIndex))
+  {
+    bestMove(game, x, y, -1, 0, pIndex, possibility);
+    isPossible = true;
+  }
+  if (checkDirection(game, x, y, -1, -1, &pIndex))
+  {
+    bestMove(game, x, y, -1, -1, pIndex, possibility);
+    isPossible = true;
+  }
+  if (checkDirection(game, x, y, -1, 1, &pIndex))
+  {
+    bestMove(game, x, y, -1, 1, pIndex, possibility);
+    isPossible = true;
+  }
 
   if (isPossible)
   {
     _possibility.push_back(possibility);
     std::cout << "Best move: " << possibility.best_move.x << " " << possibility.best_move.y << std::endl;
     std::cout << "Risk level: " << possibility.risk_level << std::endl;
+    possibility.risk_level = 0;
     return true;
   }
   return false;
@@ -61,9 +82,11 @@ void defenseAlgorithm::bestMove(
   {
     if (game->map[ny][nx] == TILE_STATE::EMPTY)
     {
+      std::cout << "risk before: " << possibility.risk_level << std::endl;
       possibility.best_move.x = nx;
       possibility.best_move.y = ny;
       possibility.risk_level += bestMoveScore;
+      std::cout << "risk after: " << possibility.risk_level << std::endl;
     }
   }
 }
@@ -82,9 +105,6 @@ bool defenseAlgorithm::checkDirection(
       _direction.clear();
       return false;
     }
-
-    if (game->map[ny][nx] == TILE_STATE::EMPTY && i == 0)
-      return false;
 
     if (game->map[ny][nx] == TILE_STATE::EMPTY)
       empty++;
