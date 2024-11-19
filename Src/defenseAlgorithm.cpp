@@ -49,7 +49,6 @@ bool defenseAlgorithm::canBlockMove(gomoku_t *game, int x, int y)
   }
   if (checkDirection(game, x, y, -1, -1, &pIndex))
   {
-    std::cout << "Check direction up" << std::endl;
     bestMove(game, x, y, -1, -1, pIndex, possibility);
     isPossible = true;
   }
