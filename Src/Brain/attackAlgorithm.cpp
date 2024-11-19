@@ -60,7 +60,7 @@ bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, i
             for (i = pos.first - 1, j = pos.second + 1; i > pos.first - depth && j < pos.second + depth; i--, j++) {
                 if (i < 0 || j > sizeY - 1 || (gameState.map[j][i] != TILE_STATE::EMPTY && i == pos.first - 1 && j == pos.second + 1) || (gameState.map[j][i] == TILE_STATE::PLAYER2 && i < pos.first - 1 && j > pos.second + 1)) {
                     for (i = pos.first + 1, j = pos.second - 1; i < pos.first + depth && j > pos.second - depth; i++, j--) {
-                        if (i > sizeX - 1 || j < 0 || (gameState.map[j][i] != TILE_STATE::EMPTY && i == pos.first + 1 && j == pos.second - 1) || (gameState.map[j][i] == TILE_STATE::PLAYER2 && i > pos.first + 1 && j < pos.second - 1)) {
+                        if (i >= sizeX || j < 0 || (gameState.map[j][i] != TILE_STATE::EMPTY && i == pos.first + 1 && j == pos.second - 1) || (gameState.map[j][i] == TILE_STATE::PLAYER2 && i > pos.first + 1 && j < pos.second - 1)) {
                             return false;
                         }
                     }
@@ -274,7 +274,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                         startPos = {j, i};
                     }
                     count++;
-                    if (i != gameState.size.y - 1) {
+                    if ((i + k) != gameState.size.y - 1) {
                         continue;
                     }
                 }
@@ -321,19 +321,19 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
             if (gameState.map[i][j] != TILE_STATE::ME) {
                 continue;
             }
-            for (int k = 0; (i + k) < gameState.size.y && (j - k) > 0; k++) {
+            for (int k = 0; (i + k) < gameState.size.y && (j - k) > -1; k++) {
                 if (gameState.map[i + k][j - k] == TILE_STATE::ME) {
                     if (count == 0) {
                         startPos = {j, i};
                     }
                     count++;
-                    if (i != gameState.size.y - 1) {
+                    if ((i + k) != gameState.size.y - 1) {
                         continue;
                     }
                 }
                 if (gameState.map[i + k][j - k] == TILE_STATE::PLAYER2) {
                     for (int l = 0; l < 5 - count; l++) {
-                        if (startPos.first + l > gameState.size.x || startPos.second - l < 0 || gameState.map[startPos.second - l][startPos.first + l] == TILE_STATE::PLAYER2) {
+                        if (startPos.first + l > gameState.size.x || startPos.second - l < -1 || gameState.map[startPos.second - l][startPos.first + l] == TILE_STATE::PLAYER2) {
                             count = 0;
                             break;
                         }
@@ -343,7 +343,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     RowInfo rowInfo;
                     if (gameState.map[i + k][j - k] == TILE_STATE::EMPTY) {
                         for (int t = 1; t < (4 - count); t++) {
-                            if ((i + t) >= gameState.size.y || (j - t) < 0 || gameState.map[i + t][j - t] != TILE_STATE::ME) {
+                            if ((i + t) >= gameState.size.y || (j - t) < -1 || gameState.map[i + t][j - t] != TILE_STATE::ME) {
                                 rowInfo.priority = true;
                                 break;
                             }
