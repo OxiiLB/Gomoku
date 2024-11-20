@@ -5,7 +5,6 @@
 ** mcts
 */
 
-#include <iostream>
 #include "attackAlgorithm.hpp"
 
 bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
@@ -82,10 +81,10 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
     std::pair<int, int> bestMove;
 
     while (!rows.empty()) {
-        i++;
         RowInfo bestRow;
         int longestRow = 0;
         for (auto &row : rows) {
+            i++;
             if (row.priority) {
                 bestRow = row;
                 break;
