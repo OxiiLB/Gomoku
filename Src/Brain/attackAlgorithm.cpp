@@ -5,6 +5,7 @@
 ** mcts
 */
 
+#include <iostream>
 #include "attackAlgorithm.hpp"
 
 bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo *row, std::pair<int, int> pos, int depth)
@@ -238,7 +239,7 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
             if (count > 0 && count < 5) {
                 RowInfo rowInfo;
                 if (gameState.map[i][j] == TILE_STATE::EMPTY) {
-                    for (int t = i + 1; (i + (5 - count)); t++) {
+                    for (int t = i + 1; t < (i + (5 - count)); t++) {
                         if (t >= gameState.size.y || gameState.map[t][j] != TILE_STATE::ME) {
                             rowInfo.priority = true;
                             break;
