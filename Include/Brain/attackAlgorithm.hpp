@@ -37,8 +37,7 @@ class AttackAlgorithm {
         ~AttackAlgorithm() {}
 
         std::vector<RowInfo> getRows(gomoku_t &game);
-        // std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &game);
         std::unordered_map<int, std::pair<int, int>> getBestMoveInfo(gomoku_t &game);
-        bool canWin(gomoku_t &gameState, RowInfo row, std::pair<int, int> pos, int depth);
+        bool canWin(gomoku_t &gameState, RowInfo &row, std::pair<int, int> pos, int depth);
         std::unordered_map<int, std::pair<int, int>> getBestMove(gomoku_t &game, std::vector<RowInfo> &rows);
 };

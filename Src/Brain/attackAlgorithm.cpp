@@ -7,7 +7,7 @@
 
 #include "attackAlgorithm.hpp"
 
-bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo row, std::pair<int, int> pos, int depth)
+bool AttackAlgorithm::canWin(gomoku_t &gameState, RowInfo &row, std::pair<int, int> pos, int depth)
 {
     int i = 0;
     int j = 0;
@@ -191,6 +191,25 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
         return {{depth, bestMove}};
     }
     return {};
+}
+
+inline std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &gameState)
+{
+    int i = 0;
+    int j = 0;
+    std::vector<std::pair<int, int>> moves;
+
+    for (i = 0; i < gameState.size.y; ++i)
+    {
+        for (j = 0; j < gameState.size.x; ++j)
+        {
+            if (gameState.map[i][j] == TILE_STATE::EMPTY)
+            {
+                moves.push_back({j, i});
+            }
+        }
+    }
+    return moves;
 }
 
 std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
@@ -504,27 +523,8 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
     return rows;
 }
 
-inline std::vector<std::pair<int, int>> getAvailableMoves(const gomoku_t &gameState)
-{
-    int i = 0;
-    int j = 0;
-    std::vector<std::pair<int, int>> moves;
-
-    for (i = 0; i < gameState.size.y; ++i)
-    {
-        for (j = 0; j < gameState.size.x; ++j)
-        {
-            if (gameState.map[i][j] == TILE_STATE::EMPTY)
-            {
-                moves.push_back({j, i});
-            }
-        }
-    }
-    return moves;
-}
-
 std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMoveInfo(gomoku_t &game)
-{    
+{
     std::unordered_map<int, std::pair<int, int>> bestMoveInfo;
     std::vector<RowInfo> rows;
 
