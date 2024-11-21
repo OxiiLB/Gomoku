@@ -104,7 +104,6 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
         longestRow = 0;
         for (auto &row : rows)
         {
-            i++;
             if (row.priority)
             {
                 bestRow = row;
@@ -112,6 +111,7 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
             }
             if (row.len > longestRow)
             {
+                i++;
                 longestRow = row.len;
                 bestRow = row;
             }
@@ -119,13 +119,9 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
 
         depth = (5 - bestRow.len);
 
-        if (bestRow.priority == false)
+        if (bestRow.useEndPos == false)
         {
-            if (bestRow.useEndPos)
-            {
-                lastMove = bestRow.endPos;
-            }
-            else if (canWin(gameState, bestRow, bestRow.startPos, depth))
+            if (canWin(gameState, bestRow, bestRow.startPos, depth))
             {
                 lastMove = bestRow.startPos;
             }
