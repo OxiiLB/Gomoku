@@ -26,6 +26,7 @@ struct RowInfo {
     Direction direction;
     bool positive = true;
     bool priority = false;
+    bool useEndPos = false;
     std::pair<int, int> startPos;
     std::pair<int, int> endPos;
 };
