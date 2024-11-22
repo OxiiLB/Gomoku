@@ -119,7 +119,7 @@ std::unordered_map<int, std::pair<int, int>> AttackAlgorithm::getBestMove(gomoku
 
         depth = (5 - bestRow.len);
 
-        if (bestRow.useEndPos == false)
+        if (bestRow.priority == false)
         {
             if (canWin(gameState, bestRow, bestRow.startPos, depth))
             {
@@ -249,19 +249,13 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                 {
                     for (int t = j + 1; t < (j + (5 - count)); t++)
                     {
-                        if (t >= gameState.size.x || gameState.map[i][j + 1] != TILE_STATE::ME || gameState.map[i][t] == TILE_STATE::PLAYER2)
+                        if (t >= gameState.size.x || gameState.map[i][t] != TILE_STATE::ME)
                         {
                             rowInfo.priority = true;
-                            rowInfo.useEndPos = true;
                             break;
-                        }
-                        if (gameState.map[i][t] != TILE_STATE::ME)
-                        {
-                            rowInfo.priority = true;
                         }
                     }
                     rowInfo.priority = !rowInfo.priority;
-                    rowInfo.useEndPos = !rowInfo.useEndPos;
                 }
                 rowInfo.len = count;
                 rowInfo.direction = Direction::HORIZONTAL;
@@ -321,19 +315,13 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                 {
                     for (int t = i + 1; t < (i + (5 - count)); t++)
                     {
-                        if (t >= gameState.size.y || gameState.map[i + 1][j] != TILE_STATE::ME || gameState.map[t][j] == TILE_STATE::PLAYER2)
+                        if (t >= gameState.size.y || gameState.map[t][j] != TILE_STATE::ME)
                         {
                             rowInfo.priority = true;
-                            rowInfo.useEndPos = true;
                             break;
-                        }
-                        if (gameState.map[t][j] != TILE_STATE::ME)
-                        {
-                            rowInfo.priority = true;
                         }
                     }
                     rowInfo.priority = !rowInfo.priority;
-                    rowInfo.useEndPos = !rowInfo.useEndPos;
                 }
                 rowInfo.len = count;
                 rowInfo.direction = Direction::VERTICAL;
@@ -399,19 +387,13 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     {
                         for (int t = 1; t < (4 - count); t++)
                         {
-                            if ((i + t) >= gameState.size.y || (j + t) >= gameState.size.x || gameState.map[i + 1][j + 1] != TILE_STATE::ME || gameState.map[i + t][j + t] == TILE_STATE::PLAYER2)
+                            if ((i + k + t) >= gameState.size.y || (j + k + t) >= gameState.size.x || gameState.map[i + k + t][j + k + t] != TILE_STATE::ME)
                             {
                                 rowInfo.priority = true;
-                                rowInfo.useEndPos = true;
                                 break;
-                            }
-                            if (gameState.map[i + t][j + t] != TILE_STATE::ME)
-                            {
-                                rowInfo.priority = true;
                             }
                         }
                         rowInfo.priority = !rowInfo.priority;
-                        rowInfo.useEndPos = !rowInfo.useEndPos;
                     }
                     rowInfo.len = count;
                     rowInfo.direction = Direction::LEFT_DIAGONAL;
@@ -479,19 +461,13 @@ std::vector<RowInfo> AttackAlgorithm::getRows(gomoku_t &gameState)
                     {
                         for (int t = 1; t < (4 - count); t++)
                         {
-                            if ((i + t) >= gameState.size.y || (j - t) < -1 || gameState.map[i + 1][j - 1] != TILE_STATE::ME || gameState.map[i + t][j - t] == TILE_STATE::PLAYER2)
+                            if ((i + k + t) >= gameState.size.y || (j - k - t) < -1 || gameState.map[i + k + t][j - k - t] != TILE_STATE::ME)
                             {
                                 rowInfo.priority = true;
-                                rowInfo.useEndPos = true;
                                 break;
-                            }
-                            if (gameState.map[i + t][j - t] != TILE_STATE::ME)
-                            {
-                                rowInfo.priority = true;
                             }
                         }
                         rowInfo.priority = !rowInfo.priority;
-                        rowInfo.useEndPos = !rowInfo.useEndPos;
                     }
                     rowInfo.len = count;
                     rowInfo.direction = Direction::RIGHT_DIAGONAL;
