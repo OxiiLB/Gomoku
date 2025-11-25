@@ -114,7 +114,7 @@ void Command::board(ISystem *system, gomoku_t *game)
 
 void Command::about()
 {
-  _log.SendResponse("name=\"pbrain-gomoku-ai\",version=\"1.0\",author=\"Dvaking,"
+  _log.SendResponse("name=\"pbrain-gomoku-ai\",version=\"1.0\",author=\"MrAmarok,"
                     "Oxi,Alea\",country=\"FR\"");
 }
 
